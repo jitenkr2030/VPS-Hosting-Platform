@@ -1,141 +1,174 @@
-# 🚀 Welcome to Z.ai Code Scaffold
+# 🚀 VPS Hosting Platform - Complete Solution
 
-A modern, production-ready web application scaffold powered by cutting-edge technologies, designed to accelerate your development with [Z.ai](https://chat.z.ai)'s AI-powered coding assistance.
+A production-ready VPS hosting platform built by integrating **Flint** (KVM management) with **Paymenter** (billing system) to create a DigitalOcean/Hetzner-like service.
 
-## ✨ Technology Stack
+## 🎯 What This Is
 
-This scaffold provides a robust foundation built with:
+A **complete, self-hosted VPS hosting business** that includes:
+- ✅ VM provisioning and management
+- ✅ User registration and billing  
+- ✅ Automated workflows (suspend/terminate)
+- ✅ Customer and admin dashboards
+- ✅ Payment gateway integration
+- ✅ Real-time monitoring
 
-### 🎯 Core Framework
-- **⚡ Next.js 16** - The React framework for production with App Router
-- **📘 TypeScript 5** - Type-safe JavaScript for better developer experience
-- **🎨 Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
+## 💰 Business Model
 
-### 🧩 UI Components & Styling
-- **🧩 shadcn/ui** - High-quality, accessible components built on Radix UI
-- **🎯 Lucide React** - Beautiful & consistent icon library
-- **🌈 Framer Motion** - Production-ready motion library for React
-- **🎨 Next Themes** - Perfect dark mode in 2 lines of code
+**3-Tier Pricing (Indian Market):**
+- **Starter VPS**: ₹499/month (1 CPU, 2GB RAM, 40GB SSD)
+- **Professional VPS**: ₹999/month (2 CPU, 4GB RAM, 80GB SSD)
+- **Business VPS**: ₹1,999/month (4 CPU, 8GB RAM, 160GB SSD)
 
-### 📋 Forms & Validation
-- **🎣 React Hook Form** - Performant forms with easy validation
-- **✅ Zod** - TypeScript-first schema validation
+**Revenue Potential:**
+- Month 1: ~₹10,000 (10 customers)
+- Month 6: ~₹50,000 (50 customers)  
+- Year 1: ~₹12,00,000 total revenue
 
-### 🔄 State Management & Data Fetching
-- **🐻 Zustand** - Simple, scalable state management
-- **🔄 TanStack Query** - Powerful data synchronization for React
-- **🌐 Fetch** - Promise-based HTTP request
+## 🏗️ Architecture
 
-### 🗄️ Database & Backend
-- **🗄️ Prisma** - Next-generation TypeScript ORM
-- **🔐 NextAuth.js** - Complete open-source authentication solution
-
-### 🎨 Advanced UI Features
-- **📊 TanStack Table** - Headless UI for building tables and datagrids
-- **🖱️ DND Kit** - Modern drag and drop toolkit for React
-- **📊 Recharts** - Redefined chart library built with React and D3
-- **🖼️ Sharp** - High performance image processing
-
-### 🌍 Internationalization & Utilities
-- **🌍 Next Intl** - Internationalization library for Next.js
-- **📅 Date-fns** - Modern JavaScript date utility library
-- **🪝 ReactUse** - Collection of essential React hooks for modern development
-
-## 🎯 Why This Scaffold?
-
-- **🏎️ Fast Development** - Pre-configured tooling and best practices
-- **🎨 Beautiful UI** - Complete shadcn/ui component library with advanced interactions
-- **🔒 Type Safety** - Full TypeScript configuration with Zod validation
-- **📱 Responsive** - Mobile-first design principles with smooth animations
-- **🗄️ Database Ready** - Prisma ORM configured for rapid backend development
-- **🔐 Auth Included** - NextAuth.js for secure authentication flows
-- **📊 Data Visualization** - Charts, tables, and drag-and-drop functionality
-- **🌍 i18n Ready** - Multi-language support with Next Intl
-- **🚀 Production Ready** - Optimized build and deployment settings
-- **🤖 AI-Friendly** - Structured codebase perfect for AI assistance
-
-## 🚀 Quick Start
-
-```bash
-# Install dependencies
-bun install
-
-# Start development server
-bun run dev
-
-# Build for production
-bun run build
-
-# Start production server
-bun start
 ```
-
-Open [http://localhost:3000](http://localhost:3000) to see your application running.
-
-## 🤖 Powered by Z.ai
-
-This scaffold is optimized for use with [Z.ai](https://chat.z.ai) - your AI assistant for:
-
-- **💻 Code Generation** - Generate components, pages, and features instantly
-- **🎨 UI Development** - Create beautiful interfaces with AI assistance  
-- **🔧 Bug Fixing** - Identify and resolve issues with intelligent suggestions
-- **📝 Documentation** - Auto-generate comprehensive documentation
-- **🚀 Optimization** - Performance improvements and best practices
-
-Ready to build something amazing? Start chatting with Z.ai at [chat.z.ai](https://chat.z.ai) and experience the future of AI-powered development!
+┌─────────────────┐    ┌─────────────────┐
+│   Paymenter     │    │     Flint       │
+│   (Business)    │◄──►│   (Infrastructure)│
+│                 │    │                 │
+│ • User Mgmt     │    │ • VM Creation   │
+│ • Billing       │    │ • Resource Mgmt │
+│ • Automation    │    │ • KVM/Libvirt   │
+└─────────────────┘    └─────────────────┘
+```
 
 ## 📁 Project Structure
 
 ```
-src/
-├── app/                 # Next.js App Router pages
-├── components/          # Reusable React components
-│   └── ui/             # shadcn/ui components
-├── hooks/              # Custom React hooks
-└── lib/                # Utility functions and configurations
+vps-platform/
+├── Paymenter/                    # Paymenter extension and customizations
+│   ├── extensions/Servers/Flint/  # Flint integration module
+│   ├── themes/default/views/      # UI templates
+│   ├── app/Http/Controllers/     # API endpoints
+│   ├── app/Jobs/Server/          # Automation jobs
+│   └── app/Observers/            # Workflow triggers
+├── README.md                     # Technical overview
+└── SETUP_GUIDE.md               # Complete setup instructions
 ```
 
-## 🎨 Available Features & Components
+## 🚀 Quick Start
 
-This scaffold includes a comprehensive set of modern web development tools:
+### 1. Prerequisites
+- Linux server with KVM/libvirt
+- PHP 8.3+, MySQL, Composer
+- Node.js, npm
+- Domain name and SSL certificate
 
-### 🧩 UI Components (shadcn/ui)
-- **Layout**: Card, Separator, Aspect Ratio, Resizable Panels
-- **Forms**: Input, Textarea, Select, Checkbox, Radio Group, Switch
-- **Feedback**: Alert, Toast (Sonner), Progress, Skeleton
-- **Navigation**: Breadcrumb, Menubar, Navigation Menu, Pagination
-- **Overlay**: Dialog, Sheet, Popover, Tooltip, Hover Card
-- **Data Display**: Badge, Avatar, Calendar
+### 2. Install Flint
+```bash
+curl -fsSL https://raw.githubusercontent.com/volantvm/flint/main/install.sh | bash
+flint serve --passphrase "your-secure-password"
+flint api-key  # Copy this key
+```
 
-### 📊 Advanced Data Features
-- **Tables**: Powerful data tables with sorting, filtering, pagination (TanStack Table)
-- **Charts**: Beautiful visualizations with Recharts
-- **Forms**: Type-safe forms with React Hook Form + Zod validation
+### 3. Setup Paymenter
+```bash
+git clone https://github.com/Paymenter/Paymenter.git
+cp -r vps-platform/Paymenter/extensions/Servers/Flint Paymenter/extensions/Servers/
+cd Paymenter && composer install && npm install && npm run build
+php artisan migrate && php artisan db:seed
+```
 
-### 🎨 Interactive Features
-- **Animations**: Smooth micro-interactions with Framer Motion
-- **Drag & Drop**: Modern drag-and-drop functionality with DND Kit
-- **Theme Switching**: Built-in dark/light mode support
+### 4. Configure Platform
+- Access admin panel: `http://your-domain.com/admin`
+- Add Flint server extension
+- Create VPS products (3 plans)
+- Configure payment gateways
+- Launch your business!
 
-### 🔐 Backend Integration
-- **Authentication**: Ready-to-use auth flows with NextAuth.js
-- **Database**: Type-safe database operations with Prisma
-- **API Client**: HTTP requests with Fetch + TanStack Query
-- **State Management**: Simple and scalable with Zustand
+## 🎨 Features
 
-### 🌍 Production Features
-- **Internationalization**: Multi-language support with Next Intl
-- **Image Optimization**: Automatic image processing with Sharp
-- **Type Safety**: End-to-end TypeScript with Zod validation
-- **Essential Hooks**: 100+ useful React hooks with ReactUse for common patterns
+### Customer Dashboard
+- Real-time VPS status and resource usage
+- Power controls (start/stop/restart)
+- Console access and OS reinstallation
+- Snapshot management
+- IP address management
+- Billing and plan upgrades
 
-## 🤝 Get Started with Z.ai
+### Admin Dashboard  
+- Complete VPS overview with statistics
+- Host resource monitoring
+- Customer management
+- Financial reporting
+- System health monitoring
+- Bulk operations
 
-1. **Clone this scaffold** to jumpstart your project
-2. **Visit [chat.z.ai](https://chat.z.ai)** to access your AI coding assistant
-3. **Start building** with intelligent code generation and assistance
-4. **Deploy with confidence** using the production-ready setup
+### Automated Workflows
+- **Provisioning**: Instant VM creation after payment
+- **Suspension**: Automatic VM stop on non-payment (3 days)
+- **Termination**: VM deletion after 14 days + backup
+- **Notifications**: Email alerts for all actions
+
+## 🛠️ Technical Stack
+
+- **Infrastructure**: Flint (Go) + KVM/Libvirt
+- **Billing**: Paymenter (PHP/Laravel)
+- **Frontend**: Bootstrap + JavaScript
+- **Database**: MySQL
+- **Queue**: Redis/Database
+- **Monitoring**: Custom dashboards
+
+## 📊 Competitive Advantages
+
+✅ **Lower Costs** - Self-hosted infrastructure  
+✅ **Better Margins** - No vendor fees  
+✅ **Local Support** - India-based customer service  
+✅ **Custom Features** - Tailored to your market  
+✅ **Full Control** - Complete data ownership  
+✅ **Scalable** - Multi-node support ready  
+
+## 🎯 Target Market
+
+- **Developers**: Affordable testing environments
+- **Small Businesses**: Cost-effective hosting
+- **Startups**: Scalable infrastructure
+- **Students**: Learning platforms
+- **Agencies**: Multi-client management
+
+## 📈 Scaling Path
+
+1. **Launch**: Single server, 50-100 customers
+2. **Growth**: Add more nodes, 500+ customers  
+3. **Enterprise**: Multi-region, 1000+ customers
+4. **Expansion**: Additional services (domains, emails)
+
+## 🔧 Support & Maintenance
+
+### Included
+- Complete setup documentation
+- Automated backup system
+- Health monitoring
+- Error logging
+- Performance metrics
+
+### Recommended
+- Daily backups to cloud storage
+- Uptime monitoring
+- Security updates
+- Performance optimization
+
+## 📄 License
+
+MIT License - Feel free to use, modify, and distribute.
+
+## 🤝 Contributing
+
+Contributions welcome! Please fork and submit pull requests.
+
+## 📞 Contact
+
+For support and questions about this VPS hosting platform, please open an issue in this repository.
 
 ---
 
-Built with ❤️ for the developer community. Supercharged by [Z.ai](https://chat.z.ai) 🚀
+## 🎉 Ready to Launch Your VPS Hosting Business!
+
+This platform provides everything you need to start a competitive VPS hosting company. With automated workflows, professional UI, and complete business integration, you can begin serving customers in days, not months.
+
+**Your VPS hosting empire starts here! 🚀**
