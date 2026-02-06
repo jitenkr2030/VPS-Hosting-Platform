@@ -1,174 +1,254 @@
-# 🚀 VPS Hosting Platform - Complete Solution
+# VPS Hosting Platform
 
-A production-ready VPS hosting platform built by integrating **Flint** (KVM management) with **Paymenter** (billing system) to create a DigitalOcean/Hetzner-like service.
+A modern, full-stack VPS hosting platform built with Next.js 16, TypeScript, and Prisma. This platform provides a complete solution for managing virtual private servers with user authentication, billing integration, and a beautiful UI.
 
-## 🎯 What This Is
+## 🚀 Features
 
-A **complete, self-hosted VPS hosting business** that includes:
-- ✅ VM provisioning and management
-- ✅ User registration and billing  
-- ✅ Automated workflows (suspend/terminate)
-- ✅ Customer and admin dashboards
-- ✅ Payment gateway integration
-- ✅ Real-time monitoring
+### Core Features
+- **User Authentication**: Secure sign up/sign in with NextAuth.js
+- **VPS Management**: Create, monitor, and manage VPS instances
+- **Dashboard**: Comprehensive dashboard with statistics and resource monitoring
+- **Responsive Design**: Mobile-first design with Tailwind CSS and shadcn/ui
+- **Database**: SQLite with Prisma ORM for data management
 
-## 💰 Business Model
+### VPS Features
+- **Multiple Plans**: Starter, Professional, and Business tiers
+- **Instant Provisioning**: Automated VPS creation and deployment
+- **Resource Monitoring**: Real-time CPU, RAM, storage, and bandwidth tracking
+- **Status Management**: Active, Pending, Suspended, and Terminated states
+- **IP Management**: Automatic IP address assignment
+- **OS Templates**: Multiple operating system options
 
-**3-Tier Pricing (Indian Market):**
-- **Starter VPS**: ₹499/month (1 CPU, 2GB RAM, 40GB SSD)
-- **Professional VPS**: ₹999/month (2 CPU, 4GB RAM, 80GB SSD)
-- **Business VPS**: ₹1,999/month (4 CPU, 8GB RAM, 160GB SSD)
+### UI/UX Features
+- **Modern Landing Page**: Professional marketing page with pricing
+- **Authentication Pages**: Beautiful sign in/sign up forms
+- **Interactive Dashboard**: Rich, data-driven user interface
+- **Loading States**: Smooth loading and error handling
+- **Responsive Design**: Works perfectly on all devices
 
-**Revenue Potential:**
-- Month 1: ~₹10,000 (10 customers)
-- Month 6: ~₹50,000 (50 customers)  
-- Year 1: ~₹12,00,000 total revenue
+## 🛠️ Tech Stack
 
-## 🏗️ Architecture
+### Frontend
+- **Next.js 16**: React framework with App Router
+- **TypeScript 5**: Type-safe development
+- **Tailwind CSS 4**: Utility-first CSS framework
+- **shadcn/ui**: Modern component library
+- **Lucide React**: Beautiful icons
+- **Framer Motion**: Smooth animations
 
-```
-┌─────────────────┐    ┌─────────────────┐
-│   Paymenter     │    │     Flint       │
-│   (Business)    │◄──►│   (Infrastructure)│
-│                 │    │                 │
-│ • User Mgmt     │    │ • VM Creation   │
-│ • Billing       │    │ • Resource Mgmt │
-│ • Automation    │    │ • KVM/Libvirt   │
-└─────────────────┘    └─────────────────┘
-```
+### Backend
+- **NextAuth.js**: Authentication and session management
+- **Prisma**: Database ORM and migrations
+- **SQLite**: Lightweight database
+- **bcryptjs**: Password hashing
+- **Zod**: Schema validation
+
+### Development
+- **ESLint**: Code quality and consistency
+- **TypeScript**: Static type checking
+- **Bun**: Fast package manager and runtime
+
+## 📦 Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd vps-hosting-platform
+   ```
+
+2. **Install dependencies**
+   ```bash
+   bun install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.local.example .env.local
+   # Edit .env.local with your configuration
+   ```
+
+4. **Set up the database**
+   ```bash
+   bun run db:push
+   bun run db:seed
+   ```
+
+5. **Start the development server**
+   ```bash
+   bun run dev
+   ```
+
+6. **Open your browser**
+   Navigate to `http://localhost:3000`
+
+## 🗄️ Database Schema
+
+### Users
+- Authentication and user management
+- Role-based access (USER/ADMIN)
+- Session management with NextAuth.js
+
+### VPS Instances
+- Instance configuration and status
+- Resource allocation (CPU, RAM, Storage)
+- Billing and subscription management
+- IP address management
+
+### VPS Templates
+- Operating system templates
+- Version management
+- Template metadata
 
 ## 📁 Project Structure
 
 ```
-vps-platform/
-├── Paymenter/                    # Paymenter extension and customizations
-│   ├── extensions/Servers/Flint/  # Flint integration module
-│   ├── themes/default/views/      # UI templates
-│   ├── app/Http/Controllers/     # API endpoints
-│   ├── app/Jobs/Server/          # Automation jobs
-│   └── app/Observers/            # Workflow triggers
-├── README.md                     # Technical overview
-└── SETUP_GUIDE.md               # Complete setup instructions
+src/
+├── app/                    # Next.js App Router
+│   ├── api/               # API routes
+│   │   ├── auth/          # Authentication endpoints
+│   │   └── vps/           # VPS management endpoints
+│   ├── auth/              # Authentication pages
+│   ├── dashboard/         # Protected dashboard area
+│   ├── globals.css        # Global styles
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Landing page
+├── components/            # React components
+│   ├── ui/               # shadcn/ui components
+│   └── providers.tsx     # Session provider
+├── lib/                  # Utility libraries
+│   ├── auth.ts          # NextAuth configuration
+│   ├── db.ts            # Prisma client
+│   └── utils.ts         # Helper functions
+└── prisma/               # Database schema and seeds
+    ├── schema.prisma    # Database definition
+    └── seed.ts          # Seed data
 ```
 
-## 🚀 Quick Start
+## 🔐 Authentication
 
-### 1. Prerequisites
-- Linux server with KVM/libvirt
-- PHP 8.3+, MySQL, Composer
-- Node.js, npm
-- Domain name and SSL certificate
+The platform uses NextAuth.js for secure authentication:
 
-### 2. Install Flint
+- **Credentials Provider**: Email/password authentication
+- **Session Management**: JWT-based sessions
+- **Protected Routes**: Middleware for route protection
+- **Role-based Access**: User and admin roles
+
+## 💰 Pricing Plans
+
+### Starter Plan - ₹499/month
+- 1 vCPU Core
+- 2 GB RAM
+- 40 GB NVMe SSD
+- 2 TB Bandwidth
+- 1 IPv4 Address
+
+### Professional Plan - ₹999/month (Most Popular)
+- 2 vCPU Cores
+- 4 GB RAM
+- 80 GB NVMe SSD
+- 4 TB Bandwidth
+- 1 IPv4 Address
+
+### Business Plan - ₹1,999/month
+- 4 vCPU Cores
+- 8 GB RAM
+- 160 GB NVMe SSD
+- 8 TB Bandwidth
+- 2 IPv4 Addresses
+
+## 🚀 Deployment
+
+### Development
 ```bash
-curl -fsSL https://raw.githubusercontent.com/volantvm/flint/main/install.sh | bash
-flint serve --passphrase "your-secure-password"
-flint api-key  # Copy this key
+bun run dev
 ```
 
-### 3. Setup Paymenter
+### Production Build
 ```bash
-git clone https://github.com/Paymenter/Paymenter.git
-cp -r vps-platform/Paymenter/extensions/Servers/Flint Paymenter/extensions/Servers/
-cd Paymenter && composer install && npm install && npm run build
-php artisan migrate && php artisan db:seed
+bun run build
+bun run start
 ```
 
-### 4. Configure Platform
-- Access admin panel: `http://your-domain.com/admin`
-- Add Flint server extension
-- Create VPS products (3 plans)
-- Configure payment gateways
-- Launch your business!
+### Database Operations
+```bash
+bun run db:push      # Push schema changes
+bun run db:generate  # Generate Prisma client
+bun run db:seed      # Seed database
+```
 
-## 🎨 Features
+## 🔧 Configuration
 
-### Customer Dashboard
-- Real-time VPS status and resource usage
-- Power controls (start/stop/restart)
-- Console access and OS reinstallation
-- Snapshot management
-- IP address management
-- Billing and plan upgrades
+### Environment Variables
+```env
+# Database
+DATABASE_URL="file:./db/custom.db"
 
-### Admin Dashboard  
-- Complete VPS overview with statistics
-- Host resource monitoring
-- Customer management
-- Financial reporting
-- System health monitoring
-- Bulk operations
+# NextAuth.js
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-secret-key"
+```
 
-### Automated Workflows
-- **Provisioning**: Instant VM creation after payment
-- **Suspension**: Automatic VM stop on non-payment (3 days)
-- **Termination**: VM deletion after 14 days + backup
-- **Notifications**: Email alerts for all actions
+## 🎨 UI Components
 
-## 🛠️ Technical Stack
+The platform uses shadcn/ui components for a consistent, modern design:
 
-- **Infrastructure**: Flint (Go) + KVM/Libvirt
-- **Billing**: Paymenter (PHP/Laravel)
-- **Frontend**: Bootstrap + JavaScript
-- **Database**: MySQL
-- **Queue**: Redis/Database
-- **Monitoring**: Custom dashboards
+- **Forms**: Controlled forms with validation
+- **Cards**: Clean content containers
+- **Buttons**: Interactive button states
+- **Navigation**: Responsive navigation components
+- **Modals**: Dialog and alert components
+- **Loading**: Skeleton and spinner components
 
-## 📊 Competitive Advantages
+## 📱 Responsive Design
 
-✅ **Lower Costs** - Self-hosted infrastructure  
-✅ **Better Margins** - No vendor fees  
-✅ **Local Support** - India-based customer service  
-✅ **Custom Features** - Tailored to your market  
-✅ **Full Control** - Complete data ownership  
-✅ **Scalable** - Multi-node support ready  
+- **Mobile-first**: Optimized for mobile devices
+- **Breakpoints**: sm, md, lg, xl screen sizes
+- **Touch-friendly**: 44px minimum touch targets
+- **Adaptive Layout**: Flexible grid systems
 
-## 🎯 Target Market
+## 🛡️ Security Features
 
-- **Developers**: Affordable testing environments
-- **Small Businesses**: Cost-effective hosting
-- **Startups**: Scalable infrastructure
-- **Students**: Learning platforms
-- **Agencies**: Multi-client management
+- **Password Hashing**: bcryptjs for secure passwords
+- **Session Security**: JWT tokens with expiration
+- **CSRF Protection**: Built-in NextAuth.js protection
+- **Input Validation**: Zod schema validation
+- **SQL Injection Prevention**: Prisma ORM protection
 
-## 📈 Scaling Path
+## 🔄 API Endpoints
 
-1. **Launch**: Single server, 50-100 customers
-2. **Growth**: Add more nodes, 500+ customers  
-3. **Enterprise**: Multi-region, 1000+ customers
-4. **Expansion**: Additional services (domains, emails)
+### Authentication
+- `POST /api/auth/register` - User registration
+- `GET/POST /api/auth/[...nextauth]` - NextAuth.js handlers
 
-## 🔧 Support & Maintenance
+### VPS Management
+- `GET /api/vps/instances` - List user VPS instances
+- `POST /api/vps/instances` - Create new VPS instance
 
-### Included
-- Complete setup documentation
-- Automated backup system
-- Health monitoring
-- Error logging
-- Performance metrics
+## 📊 Monitoring
 
-### Recommended
-- Daily backups to cloud storage
-- Uptime monitoring
-- Security updates
-- Performance optimization
+The dashboard provides comprehensive monitoring:
 
-## 📄 License
-
-MIT License - Feel free to use, modify, and distribute.
+- **Instance Status**: Real-time status updates
+- **Resource Usage**: CPU, RAM, storage metrics
+- **Billing Information**: Monthly costs and usage
+- **Activity Logs**: Instance creation and management history
 
 ## 🤝 Contributing
 
-Contributions welcome! Please fork and submit pull requests.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-## 📞 Contact
+## 📄 License
 
-For support and questions about this VPS hosting platform, please open an issue in this repository.
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For support and questions, please open an issue in the repository.
 
 ---
 
-## 🎉 Ready to Launch Your VPS Hosting Business!
-
-This platform provides everything you need to start a competitive VPS hosting company. With automated workflows, professional UI, and complete business integration, you can begin serving customers in days, not months.
-
-**Your VPS hosting empire starts here! 🚀**
+**Built with ❤️ using Next.js, TypeScript, and modern web technologies.**
