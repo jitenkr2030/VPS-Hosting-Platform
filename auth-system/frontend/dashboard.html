@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPS Platform Dashboard</title>
+    <meta name="description" content="Manage your VPS hosting services, monitor performance, and control your virtual machines.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#64748b',
+                        accent: '#f59e0b',
+                        success: '#10b981',
+                        danger: '#ef4444',
+                        warning: '#f59e0b',
+                        info: '#3b82f6'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom Styles -->
+    <style>
+        .sidebar-transition {
+            transition: all 0.3s ease;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .status-online {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-40">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <button onclick="toggleSidebar()" class="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 lg:hidden">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="flex items-center ml-4">
+                        <span class="text-xl font-bold text-primary">🚀 VPS Platform</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Notifications -->
+                    <div class="relative">
+                        <button onclick="toggleNotifications()" class="p-2 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100 relative">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
+                        </button>
+                        
+                        <!-- Notifications Dropdown -->
+                        <div id="notificationsDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200">
+                            <div class="p-4 border-b border-gray-200">
+                                <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                            </div>
+                            <div class="max-h-96 overflow-y-auto">
+                                <div class="p-4 hover:bg-gray-50 border-b border-gray-100">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-gray-900">VPS Provisioned Successfully</p>
+                                            <p class="text-xs text-gray-500">Your VPS has been created and is now running</p>
+                                            <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4 hover:bg-gray-50 border-b border-gray-100">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-gray-900">Payment Due Soon</p>
+                                            <p class="text-xs text-gray-500">Your subscription payment is due in 3 days</p>
+                                            <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 border-t border-gray-200">
+                                <a href="#" class="text-sm text-primary hover:underline">View all notifications</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- User Menu -->
+                    <div class="relative">
+                        <button onclick="toggleUserMenu()" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                            <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=User&background=3b82f6&color=fff" alt="User">
+                            <span class="ml-2 text-gray-700 font-medium hidden md:block" id="userName">John Doe</span>
+                            <i class="fas fa-chevron-down ml-2 text-gray-400"></i>
+                        </button>
+                        
+                        <!-- User Dropdown -->
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200">
+                            <div class="p-3 border-b border-gray-200">
+                                <p class="text-sm font-medium text-gray-900" id="dropdownUserName">John Doe</p>
+                                <p class="text-xs text-gray-500" id="dropdownUserEmail">john@example.com</p>
+                            </div>
+                            <div class="py-1">
+                                <a href="#" onclick="showProfile()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-user mr-2"></i> Profile
+                                </a>
+                                <a href="#" onclick="showSettings()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-cog mr-2"></i> Settings
+                                </a>
+                                <a href="#" onclick="showBilling()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-credit-card mr-2"></i> Billing
+                                </a>
+                                <a href="#" onclick="showSupport()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-headset mr-2"></i> Support
+                                </a>
+                                <div class="border-t border-gray-200 mt-1 pt-1">
+                                    <a href="#" onclick="logout()" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-16 h-full w-64 bg-white shadow-lg border-r border-gray-200 sidebar-transition z-30 transform -translate-x-full lg:translate-x-0">
+        <div class="h-full overflow-y-auto">
+            <nav class="p-4 space-y-2">
+                <a href="#dashboard" onclick="showSection('dashboard')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition-colors">
+                    <i class="fas fa-tachometer-alt w-5"></i>
+                    <span class="ml-3">Dashboard</span>
+                </a>
+                
+                <a href="#vps" onclick="showSection('vps')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition-colors">
+                    <i class="fas fa-server w-5"></i>
+                    <span class="ml-3">My VPS</span>
+                </a>
+                
+                <a href="#create" onclick="showSection('create')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition-colors">
+                    <i class="fas fa-plus-circle w-5"></i>
+                    <span class="ml-3">Create VPS</span>
+                </a>
+                
+                <a href="#snapshots" onclick="showSection('snapshots')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition-colors">
+                    <i class="fas fa-camera w-5"></i>
+                    <span class="ml-3">Snapshots</span>
+                </a>
+                
+                <a href="#billing" onclick="showSection('billing')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition-colors">
+                    <i class="fas fa-credit-card w-5"></i>
+                    <span class="ml-3">Billing</span>
+                </a>
+                
+                <a href="#support" onclick="showSection('support')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition-colors">
+                    <i class="fas fa-headset w-5"></i>
+                    <span class="ml-3">Support</span>
+                </a>
+                
+                <div class="pt-4 mt-4 border-t border-gray-200">
+                    <a href="#settings" onclick="showSection('settings')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition-colors">
+                        <i class="fas fa-cog w-5"></i>
+                        <span class="ml-3">Settings</span>
+                    </a>
+                    
+                    <a href="#api" onclick="showSection('api')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition-colors">
+                        <i class="fas fa-code w-5"></i>
+                        <span class="ml-3">API Keys</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="lg:ml-64 pt-16">
+        <div class="p-6">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="content-section">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+                    <p class="text-gray-600">Welcome back! Here's an overview of your VPS hosting services.</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Active VPS</p>
+                                <p class="text-2xl font-bold text-gray-900" id="activeVpsCount">3</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-server text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Total Storage</p>
+                                <p class="text-2xl font-bold text-gray-900">240 GB</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-hdd text-blue-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Monthly Cost</p>
+                                <p class="text-2xl font-bold text-gray-900">₹2,497</p>
+                            </div>
+                            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-rupee-sign text-yellow-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Uptime</p>
+                                <p class="text-2xl font-bold text-gray-900">99.9%</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-chart-line text-purple-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resource Usage Chart -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Resource Usage</h3>
+                        <canvas id="resourceChart" width="400" height="200"></canvas>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">VPS-web-01 started</p>
+                                        <p class="text-xs text-gray-500">2 minutes ago</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs text-gray-500">Success</span>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Snapshot created</p>
+                                        <p class="text-xs text-gray-500">1 hour ago</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs text-gray-500">Backup</span>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-2 h-2 bg-yellow-500 rounded-full mr-3"></div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Payment processed</p>
+                                        <p class="text-xs text-gray-500">3 hours ago</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs text-gray-500">Billing</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <button onclick="showSection('create')" class="flex items-center justify-center p-4 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>
+                            Create New VPS
+                        </button>
+                        <button onclick="showSection('billing')" class="flex items-center justify-center p-4 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-credit-card mr-2"></i>
+                            Upgrade Plan
+                        </button>
+                        <button onclick="showSection('support')" class="flex items-center justify-center p-4 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-headset mr-2"></i>
+                            Get Support
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VPS Management Section -->
+            <section id="vps-section" class="content-section hidden">
+                <div class="mb-8 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">My VPS</h1>
+                        <p class="text-gray-600">Manage your virtual machines and monitor their performance.</p>
+                    </div>
+                    <button onclick="showSection('create')" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-plus mr-2"></i> Create VPS
+                    </button>
+                </div>
+
+                <!-- VPS List -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Resources</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="vpsTableBody">
+                                <!-- VPS rows will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Other sections (create, snapshots, billing, etc.) would go here -->
+            <section id="create-section" class="content-section hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">Create New VPS</h1>
+                    <p class="text-gray-600">Deploy a new virtual machine with your preferred specifications.</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <p class="text-center text-gray-500">VPS creation form would be implemented here</p>
+                </div>
+            </section>
+
+            <section id="snapshots-section" class="content-section hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">Snapshots</h1>
+                    <p class="text-gray-600">Manage your VPS snapshots and backups.</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <p class="text-center text-gray-500">Snapshots management would be implemented here</p>
+                </div>
+            </section>
+
+            <section id="billing-section" class="content-section hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">Billing</h1>
+                    <p class="text-gray-600">Manage your subscription, payments, and invoices.</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <p class="text-center text-gray-500">Billing management would be implemented here</p>
+                </div>
+            </section>
+
+            <section id="support-section" class="content-section hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">Support</h1>
+                    <p class="text-gray-600">Get help from our support team.</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <p class="text-center text-gray-500">Support system would be implemented here</p>
+                </div>
+            </section>
+
+            <section id="settings-section" class="content-section hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">Settings</h1>
+                    <p class="text-gray-600">Manage your account settings and preferences.</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <p class="text-center text-gray-500">Settings page would be implemented here</p>
+                </div>
+            </section>
+
+            <section id="api-section" class="content-section hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">API Keys</h1>
+                    <p class="text-gray-600">Manage your API keys for programmatic access.</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm border-gray-200">
+                    <p class="text-center text-gray-500">API key management would be implemented here</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toastMessage">Success!</span>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <div class="loading-spinner mx-auto mb-4"></div>
+            <p class="text-gray-700">Loading...</p>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Global variables
+        let currentUser = null;
+        let authToken = localStorage.getItem('authToken');
+        let currentSection = 'dashboard';
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthStatus();
+            initializeEventListeners();
+            loadDashboardData();
+        });
+
+        // Check authentication status
+        function checkAuthStatus() {
+            if (!authToken) {
+                window.location.href = '/landing-page/index.html';
+                return;
+            }
+
+            // Verify token with auth service
+            fetch('http://localhost:3001/api/auth/profile', {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Invalid token');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    currentUser = data.data;
+                    updateUserInterface();
+                } else {
+                    throw new Error('Invalid response');
+                }
+            })
+            .catch(error => {
+                console.error('Auth check failed:', error);
+                localStorage.removeItem('authToken');
+                window.location.href = '/landing-page/index.html';
+            });
+        }
+
+        // Update user interface
+        function updateUserInterface() {
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('dropdownUserName').textContent = currentUser.name;
+                document.getElementById('dropdownUserEmail').textContent = currentUser.email;
+            }
+        }
+
+        // Initialize event listeners
+        function initializeEventListeners() {
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                const notificationsDropdown = document.getElementById('notificationsDropdown');
+                const userDropdown = document.getElementById('userDropdown');
+                
+                if (!e.target.closest('#notificationsDropdown') && !e.target.closest('button[onclick="toggleNotifications()"]')) {
+                    notificationsDropdown.classList.add('hidden');
+                }
+                
+                if (!e.target.closest('#userDropdown') && !e.target.closest('button[onclick="toggleUserMenu()"]')) {
+                    userDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Toggle functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationsDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Section navigation
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(`${section}-section`);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                currentSection = section;
+                
+                // Update sidebar active state
+                document.querySelectorAll('.sidebar-item').forEach(el => {
+                    el.classList.remove('bg-primary', 'text-white');
+                    el.classList.add('text-gray-700');
+                });
+                
+                const activeItem = document.querySelector(`a[href="#${section}"]`);
+                if (activeItem) {
+                    activeItem.classList.remove('text-gray-700');
+                    activeItem.classList.add('bg-primary', 'text-white');
+                }
+                
+                // Load section-specific data
+                loadSectionData(section);
+            }
+            
+            // Close mobile sidebar
+            if (window.innerWidth < 1024) {
+                toggleSidebar();
+            }
+        }
+
+        // Load section-specific data
+        function loadSectionData(section) {
+            switch(section) {
+                case 'dashboard':
+                    loadDashboardData();
+                    break;
+                case 'vps':
+                    loadVPSData();
+                    break;
+                default:
+                    // Other sections would have their own data loading
+                    break;
+            }
+        }
+
+        // Load dashboard data
+        function loadDashboardData() {
+            // Simulate loading VPS data
+            setTimeout(() => {
+                updateActiveVPSCount(3);
+                initializeResourceChart();
+            }, 500);
+        }
+
+        // Load VPS data
+        function loadVPSData() {
+            const vpsData = [
+                {
+                    id: 1,
+                    name: 'web-server-01',
+                    status: 'running',
+                    plan: 'Professional',
+                    ip: '192.168.1.100',
+                    cpu: '2 cores',
+                    ram: '4 GB',
+                    storage: '80 GB'
+                },
+                {
+                    id: 2,
+                    name: 'database-01',
+                    status: 'running',
+                    plan: 'Business',
+                    ip: '192.168.1.101',
+                    cpu: '4 cores',
+                    ram: '8 GB',
+                    storage: '160 GB'
+                },
+                {
+                    id: 3,
+                    name: 'test-server-01',
+                    status: 'stopped',
+                    plan: 'Starter',
+                    ip: '192.168.1.102',
+                    cpu: '1 core',
+                    ram: '2 GB',
+                    storage: '40 GB'
+                }
+            ];
+
+            const tableBody = document.getElementById('vpsTableBody');
+            tableBody.innerHTML = '';
+
+            vpsData.forEach(vps => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${vps.name}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${vps.status === 'running' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            ${vps.status === 'running' ? 'Running' : 'Stopped'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${vps.plan}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${vps.ip}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${vps.cpu} / ${vps.ram} / ${vps.storage}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="manageVPS(${vps.id})" class="text-primary hover:text-blue-900 mr-3">Manage</button>
+                        <button onclick="deleteVPS(${vps.id})" class="text-red-600 hover:text-red-900">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Update active VPS count
+        function updateActiveVPSCount(count) {
+            document.getElementById('activeVpsCount').textContent = count;
+        }
+
+        // Initialize resource chart
+        function initializeResourceChart() {
+            const ctx = document.getElementById('resourceChart');
+            if (!ctx) return;
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+                    datasets: [{
+                        label: 'CPU Usage (%)',
+                        data: [30, 45, 60, 55, 70, 65, 40],
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Memory Usage (%)',
+                        data: [40, 50, 65, 60, 75, 70, 45],
+                        borderColor: 'rgb(16, 185, 129)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        // VPS management functions
+        function manageVPS(vpsId) {
+            showToast(`Opening VPS management for VPS ${vpsId}...`);
+            // In a real implementation, this would open a detailed VPS management modal or page
+        }
+
+        function deleteVPS(vpsId) {
+            if (confirm('Are you sure you want to delete this VPS? This action cannot be undone.')) {
+                showToast(`Deleting VPS ${vpsId}...`);
+                // In a real implementation, this would call the delete API
+                setTimeout(() => {
+                    loadVPSData(); // Reload the VPS list
+                    showToast('VPS deleted successfully');
+                }, 1000);
+            }
+        }
+
+        // Profile and settings functions
+        function showProfile() {
+            showToast('Opening profile settings...');
+            document.getElementById('userDropdown').classList.add('hidden');
+        }
+
+        function showSettings() {
+            showToast('Opening account settings...');
+            document.getElementById('userDropdown').classList.add('hidden');
+        }
+
+        function showBilling() {
+            showSection('billing');
+            document.getElementById('userDropdown').classList.add('hidden');
+        }
+
+        function showSupport() {
+            showSection('support');
+            document.getElementById('userDropdown').classList.add('hidden');
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('authToken');
+                showToast('Logging out...');
+                setTimeout(() => {
+                    window.location.href = '/landing-page/index.html';
+                }, 1000);
+            }
+        }
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            
+            // Update toast color based on type
+            toast.className = toast.className.replace(/bg-\w+-500/g, `bg-${type === 'success' ? 'green' : type === 'error' ? 'red' : 'blue'}-500`);
+            
+            toast.classList.remove('translate-x-full');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3000);
+        }
+
+        // Loading overlay
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        // Simulate real-time updates
+        setInterval(() => {
+            if (currentSection === 'dashboard') {
+                // Update random stats
+                const activeCount = document.getElementById('activeVPSCount');
+                if (activeCount) {
+                    const currentCount = parseInt(activeCount.textContent);
+                    // Simulate small changes
+                    if (Math.random() > 0.8) {
+                        activeCount.textContent = currentCount + (Math.random() > 0.5 ? 1 : -1);
+                    }
+                }
+            }
+        }, 30000); // Update every 30 seconds
+    </script>
+</body>
+</html>

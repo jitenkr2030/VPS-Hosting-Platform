@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro VPS Hosting Admin - System Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .status-online { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .scroll-smooth {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 scroll-smooth">
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-4 right-4 z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg p-4 flex items-center space-x-3 min-w-[300px]">
+            <div id="toastIcon"></div>
+            <div>
+                <p id="toastMessage" class="text-gray-800 font-medium"></p>
+                <p id="toastDescription" class="text-gray-600 text-sm"></p>
+            </div>
+            <button onclick="hideToast()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 bg-gray-900 sidebar-transition">
+            <div class="flex flex-col h-full">
+                <!-- Logo -->
+                <div class="flex items-center justify-center h-16 bg-gray-800">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-server text-2xl text-indigo-400"></i>
+                        <span class="text-xl font-bold text-white">Pro VPS Hosting Admin</span>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="flex-1 px-4 py-6 space-y-2">
+                    <a href="#dashboard" onclick="showSection('dashboard')" class="nav-item flex items-center space-x-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg px-3 py-2 transition">
+                        <i class="fas fa-tachometer-alt w-5"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#users" onclick="showSection('users')" class="nav-item flex items-center space-x-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg px-3 py-2 transition">
+                        <i class="fas fa-users w-5"></i>
+                        <span>Users</span>
+                    </a>
+                    <a href="#servers" onclick="showSection('servers')" class="nav-item flex items-center space-x-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg px-3 py-2 transition">
+                        <i class="fas fa-server w-5"></i>
+                        <span>Servers</span>
+                    </a>
+                    <a href="#billing" onclick="showSection('billing')" class="nav-item flex items-center space-x-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg px-3 py-2 transition">
+                        <i class="fas fa-credit-card w-5"></i>
+                        <span>Billing</span>
+                    </a>
+                    <a href="#system" onclick="showSection('system')" class="nav-item flex items-center space-x-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg px-3 py-2 transition">
+                        <i class="fas fa-cogs w-5"></i>
+                        <span>System</span>
+                    </a>
+                    <a href="#logs" onclick="showSection('logs')" class="nav-item flex items-center space-x-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg px-3 py-2 transition">
+                        <i class="fas fa-file-alt w-5"></i>
+                        <span>Logs</span>
+                    </a>
+                    <a href="#settings" onclick="showSection('settings')" class="nav-item flex items-center space-x-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg px-3 py-2 transition">
+                        <i class="fas fa-cog w-5"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+
+                <!-- Admin User Menu -->
+                <div class="p-4 border-t border-gray-800">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-medium">AD</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-white text-sm font-medium">Admin User</p>
+                            <p class="text-gray-400 text-xs">admin@cloudvps.com</p>
+                        </div>
+                        <button onclick="toggleUserMenu()" class="text-gray-400 hover:text-white">
+                            <i class="fas fa-chevron-up"></i>
+                        </button>
+                    </div>
+                    <div id="userMenu" class="hidden mt-2 space-y-1">
+                        <button onclick="showProfile()" class="w-full text-left text-gray-300 hover:text-white hover:bg-gray-800 rounded px-2 py-1 text-sm">
+                            <i class="fas fa-user mr-2"></i>Profile
+                        </button>
+                        <button onclick="logout()" class="w-full text-left text-gray-300 hover:text-white hover:bg-gray-800 rounded px-2 py-1 text-sm">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Header -->
+            <header class="bg-white shadow-sm border-b border-gray-200">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <div class="flex items-center space-x-4">
+                        <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <h1 class="text-2xl font-semibold text-gray-800" id="pageTitle">Admin Dashboard</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <input type="text" placeholder="Search..." class="border border-gray-300 rounded-lg px-3 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        <button class="relative text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="p-6">
+                    <!-- System Overview -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Total Users</p>
+                                    <p class="text-2xl font-bold text-gray-900" id="totalUsers">1,234</p>
+                                    <p class="text-green-600 text-sm mt-1">+12% this month</p>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-users text-blue-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Active Servers</p>
+                                    <p class="text-2xl font-bold text-gray-900" id="activeServers">856</p>
+                                    <p class="text-green-600 text-sm mt-1">+8% this month</p>
+                                </div>
+                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-server text-green-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Monthly Revenue</p>
+                                    <p class="text-2xl font-bold text-gray-900" id="monthlyRevenue">₹12.4L</p>
+                                    <p class="text-green-600 text-sm mt-1">+15% this month</p>
+                                </div>
+                                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-rupee-sign text-purple-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">System Health</p>
+                                    <p class="text-2xl font-bold text-gray-900">98.5%</p>
+                                    <p class="text-green-600 text-sm mt-1">All systems operational</p>
+                                </div>
+                                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-heartbeat text-yellow-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <!-- Revenue Chart -->
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Revenue Overview</h3>
+                            <canvas id="revenueChart" width="400" height="200"></canvas>
+                        </div>
+
+                        <!-- User Growth Chart -->
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">User Growth</h3>
+                            <canvas id="userGrowthChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900">Recent Activity</h3>
+                            <button class="text-indigo-600 hover:text-indigo-700 text-sm font-medium">
+                                View All <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                        <div class="space-y-4" id="recentActivity">
+                            <!-- Activity items will be populated here -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Users Section -->
+                <section id="users-section" class="p-6 hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">User Management</h2>
+                        <button onclick="showCreateUserModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+                            <i class="fas fa-plus mr-2"></i>Add User
+                        </button>
+                    </div>
+
+                    <!-- User Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <p class="text-gray-600 text-sm">Total Users</p>
+                            <p class="text-2xl font-bold text-gray-900">1,234</p>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <p class="text-gray-600 text-sm">Active Users</p>
+                            <p class="text-2xl font-bold text-green-600">1,156</p>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <p class="text-gray-600 text-sm">Suspended</p>
+                            <p class="text-2xl font-bold text-yellow-600">45</p>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <p class="text-gray-600 text-sm">Pending</p>
+                            <p class="text-2xl font-bold text-blue-600">33</p>
+                        </div>
+                    </div>
+
+                    <!-- User Table -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-gray-200">
+                            <div class="flex flex-wrap gap-4 items-center">
+                                <input type="text" placeholder="Search users..." class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <select class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option>All Status</option>
+                                    <option>Active</option>
+                                    <option>Suspended</option>
+                                    <option>Pending</option>
+                                </select>
+                                <select class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option>All Roles</option>
+                                    <option>User</option>
+                                    <option>Admin</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr class="text-left text-gray-600 text-sm">
+                                        <th class="px-6 py-3">User</th>
+                                        <th class="px-6 py-3">Email</th>
+                                        <th class="px-6 py-3">Status</th>
+                                        <th class="px-6 py-3">Role</th>
+                                        <th class="px-6 py-3">Servers</th>
+                                        <th class="px-6 py-3">Joined</th>
+                                        <th class="px-6 py-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTable" class="text-gray-800">
+                                    <!-- Users will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Servers Section -->
+                <section id="servers-section" class="p-6 hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">Server Management</h2>
+                        <div class="flex space-x-2">
+                            <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+                                <i class="fas fa-plus mr-2"></i>Create Server
+                            </button>
+                            <button class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                                <i class="fas fa-download mr-2"></i>Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Server Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <p class="text-gray-600 text-sm">Total Servers</p>
+                            <p class="text-2xl font-bold text-gray-900">856</p>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <p class="text-gray-600 text-sm">Running</p>
+                            <p class="text-2xl font-bold text-green-600">742</p>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <p class="text-gray-600 text-sm">Stopped</p>
+                            <p class="text-2xl font-bold text-red-600">89</p>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <p class="text-gray-600 text-sm">Pending</p>
+                            <p class="text-2xl font-bold text-yellow-600">25</p>
+                        </div>
+                    </div>
+
+                    <!-- Server Table -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-gray-200">
+                            <div class="flex flex-wrap gap-4 items-center">
+                                <input type="text" placeholder="Search servers..." class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <select class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option>All Status</option>
+                                    <option>Running</option>
+                                    <option>Stopped</option>
+                                    <option>Pending</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr class="text-left text-gray-600 text-sm">
+                                        <th class="px-6 py-3">Server Name</th>
+                                        <th class="px-6 py-3">Owner</th>
+                                        <th class="px-6 py-3">Status</th>
+                                        <th class="px-6 py-3">Plan</th>
+                                        <th class="px-6 py-3">IP Address</th>
+                                        <th class="px-6 py-3">Location</th>
+                                        <th class="px-6 py-3">Created</th>
+                                        <th class="px-6 py-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="serversTable" class="text-gray-800">
+                                    <!-- Servers will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Billing Section -->
+                <section id="billing-section" class="p-6 hidden">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Billing & Revenue</h2>
+
+                    <!-- Revenue Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <p class="text-gray-600 text-sm">This Month</p>
+                            <p class="text-2xl font-bold text-gray-900">₹12.4L</p>
+                            <p class="text-green-600 text-sm mt-1">+15% vs last month</p>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <p class="text-gray-600 text-sm">Last Month</p>
+                            <p class="text-2xl font-bold text-gray-900">₹10.8L</p>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <p class="text-gray-600 text-sm">Pending Invoices</p>
+                            <p class="text-2xl font-bold text-yellow-600">₹2.1L</p>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <p class="text-gray-600 text-sm">Overdue</p>
+                            <p class="text-2xl font-bold text-red-600">₹45K</p>
+                        </div>
+                    </div>
+
+                    <!-- Billing Table -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">Recent Invoices</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr class="text-left text-gray-600 text-sm">
+                                        <th class="px-6 py-3">Invoice #</th>
+                                        <th class="px-6 py-3">Customer</th>
+                                        <th class="px-6 py-3">Amount</th>
+                                        <th class="px-6 py-3">Due Date</th>
+                                        <th class="px-6 py-3">Status</th>
+                                        <th class="px-6 py-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-gray-800">
+                                    <tr class="border-t">
+                                        <td class="px-6 py-3">#INV-2024-1201</td>
+                                        <td class="px-6 py-3">John Doe</td>
+                                        <td class="px-6 py-3">₹999</td>
+                                        <td class="px-6 py-3">Dec 15, 2024</td>
+                                        <td class="px-6 py-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Paid</span></td>
+                                        <td class="px-6 py-3">
+                                            <button class="text-indigo-600 hover:text-indigo-700 text-sm">View</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- System Section -->
+                <section id="system-section" class="p-6 hidden">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">System Health</h2>
+
+                    <!-- System Status -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <h3 class="font-semibold text-gray-900 mb-4">CPU Usage</h3>
+                            <div class="mb-2">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>Overall</span>
+                                    <span>45%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 45%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <h3 class="font-semibold text-gray-900 mb-4">Memory Usage</h3>
+                            <div class="mb-2">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>Overall</span>
+                                    <span>67%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 67%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <h3 class="font-semibold text-gray-900 mb-4">Disk Usage</h3>
+                            <div class="mb-2">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>Overall</span>
+                                    <span>72%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-orange-500 h-2 rounded-full" style="width: 72%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Node Status -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-6">Node Status</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr class="text-left text-gray-600 text-sm">
+                                        <th class="px-6 py-3">Node Name</th>
+                                        <th class="px-6 py-3">Status</th>
+                                        <th class="px-6 py-3">CPU</th>
+                                        <th class="px-6 py-3">Memory</th>
+                                        <th class="px-6 py-3">Disk</th>
+                                        <th class="px-6 py-3">VMs</th>
+                                        <th class="px-6 py-3">Last Check</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-gray-800">
+                                    <tr class="border-t">
+                                        <td class="px-6 py-3">node-mumbai-01</td>
+                                        <td class="px-6 py-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Online</span></td>
+                                        <td class="px-6 py-3">42%</td>
+                                        <td class="px-6 py-3">65%</td>
+                                        <td class="px-6 py-3">71%</td>
+                                        <td class="px-6 py-3">234</td>
+                                        <td class="px-6 py-3">2 mins ago</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Logs Section -->
+                <section id="logs-section" class="p-6 hidden">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">System Logs</h2>
+
+                    <!-- Log Filters -->
+                    <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+                        <div class="flex flex-wrap gap-4 items-center">
+                            <select class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option>All Levels</option>
+                                <option>Error</option>
+                                <option>Warning</option>
+                                <option>Info</option>
+                                <option>Debug</option>
+                            </select>
+                            <input type="date" class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="text" placeholder="Search logs..." class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+                                <i class="fas fa-search mr-2"></i>Search
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Log Viewer -->
+                    <div class="bg-gray-900 rounded-xl shadow-sm p-6 text-green-400 font-mono text-sm">
+                        <div class="space-y-2" id="logViewer">
+                            <!-- Logs will be populated here -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings-section" class="p-6 hidden">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">System Settings</h2>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Settings Navigation -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-white rounded-xl shadow-sm p-4">
+                                <nav class="space-y-1">
+                                    <button onclick="showSettingsTab('general')" class="settings-tab w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 hover:text-gray-900 transition">
+                                        <i class="fas fa-cog mr-3"></i>General
+                                    </button>
+                                    <button onclick="showSettingsTab('billing')" class="settings-tab w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 hover:text-gray-900 transition">
+                                        <i class="fas fa-credit-card mr-3"></i>Billing
+                                    </button>
+                                    <button onclick="showSettingsTab('email')" class="settings-tab w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 hover:text-gray-900 transition">
+                                        <i class="fas fa-envelope mr-3"></i>Email
+                                    </button>
+                                    <button onclick="showSettingsTab('security')" class="settings-tab w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 hover:text-gray-900 transition">
+                                        <i class="fas fa-shield-alt mr-3"></i>Security
+                                    </button>
+                                </nav>
+                            </div>
+                        </div>
+
+                        <!-- Settings Content -->
+                        <div class="lg:col-span-2">
+                            <!-- General Settings -->
+                            <div id="general-settings" class="settings-content bg-white rounded-xl shadow-sm p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-6">General Settings</h3>
+                                <div class="space-y-6">
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-medium mb-2">Site Name</label>
+                                        <input type="text" value="Pro VPS Hosting" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-medium mb-2">Site URL</label>
+                                        <input type="url" value="https://provps.com" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-medium mb-2">Default Language</label>
+                                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                            <option>English</option>
+                                            <option>Hindi</option>
+                                        </select>
+                                    </div>
+                                    <button class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
+                                        Save Settings
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-gray-900">Create New User</h3>
+                <button onclick="closeUserModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form onsubmit="createUser(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-medium mb-2">First Name</label>
+                        <input type="text" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Last Name</label>
+                        <input type="text" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Email</label>
+                        <input type="email" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Role</label>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                        <input type="password" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+                <div class="flex space-x-3 mt-6">
+                    <button type="button" onclick="closeUserModal()" class="flex-1 bg-gray-200 text-gray-800 py-2 rounded-lg hover:bg-gray-300 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">
+                        Create User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,567 @@
+/* Mobile-first responsive design for Pro VPS Hosting Platform */
+
+/* Base styles */
+* {
+    box-sizing: border-box;
+}
+
+/* Mobile styles (default) */
+body {
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* Landing page responsive */
+.hero-section {
+    padding: 4rem 1rem;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 1.125rem;
+}
+
+.stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.features-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.pricing-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+/* Navigation mobile */
+.mobile-menu {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.mobile-menu.active {
+    transform: translateX(0);
+}
+
+.nav-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+}
+
+/* Dashboard responsive */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 40;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar.active {
+    transform: translateX(0);
+}
+
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 30;
+    display: none;
+}
+
+.sidebar-overlay.active {
+    display: block;
+}
+
+.main-content {
+    margin-left: 0;
+    width: 100%;
+}
+
+.dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.charts-row {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.server-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+/* Server cards mobile */
+.server-card {
+    padding: 1.5rem;
+}
+
+.server-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.server-action-btn {
+    width: 100%;
+    justify-content: center;
+}
+
+/* Forms mobile */
+.form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.plan-cards {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.plan-card {
+    padding: 1rem;
+}
+
+/* Tables mobile */
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.mobile-table {
+    font-size: 0.875rem;
+}
+
+.mobile-table th,
+.mobile-table td {
+    padding: 0.75rem 0.5rem;
+}
+
+/* Admin panel responsive */
+.admin-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.user-table,
+.server-table {
+    font-size: 0.875rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+/* Modals mobile */
+.modal {
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+}
+
+.modal-content {
+    padding: 1.5rem;
+}
+
+/* Toast notifications mobile */
+.toast {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    max-width: none;
+}
+
+/* Touch-friendly buttons */
+.touch-target {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Tablet styles (768px and up) */
+@media (min-width: 768px) {
+    .hero-title {
+        font-size: 3.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .pricing-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .dashboard-stats {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .charts-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .server-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .plan-cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .admin-stats {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .sidebar {
+        transform: translateX(0);
+        position: relative;
+    }
+    
+    .main-content {
+        margin-left: 16rem;
+    }
+    
+    .modal {
+        margin: 2rem;
+        max-width: 32rem;
+    }
+}
+
+/* Desktop styles (1024px and up) */
+@media (min-width: 1024px) {
+    .hero-section {
+        padding: 6rem 2rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .server-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .nav-desktop {
+        display: flex;
+    }
+    
+    .nav-mobile {
+        display: none;
+    }
+}
+
+/* Large desktop styles (1280px and up) */
+@media (min-width: 1280px) {
+    .container {
+        max-width: 1200px;
+    }
+    
+    .hero-title {
+        font-size: 4rem;
+    }
+}
+
+/* Optimizations for mobile performance */
+@media (max-width: 767px) {
+    /* Reduce animations on mobile for better performance */
+    .card-hover {
+        transform: none;
+        transition: none;
+    }
+    
+    .floating {
+        animation: none;
+    }
+    
+    /* Simplified charts for mobile */
+    .chart-container {
+        height: 250px;
+    }
+    
+    /* Hide non-essential elements on mobile */
+    .desktop-only {
+        display: none !important;
+    }
+    
+    /* Optimize images for mobile */
+    .responsive-image {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+}
+
+/* Landscape mobile optimizations */
+@media (max-width: 767px) and (orientation: landscape) {
+    .hero-section {
+        padding: 2rem 1rem;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .modal {
+        max-height: 90vh;
+    }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* Optimize for retina displays */
+    .logo {
+        image-rendering: -webkit-optimize-contrast;
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .auto-dark {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    .auto-dark .text-gray-600 {
+        color: #a0a0a0;
+    }
+    
+    .auto-dark .bg-white {
+        background-color: #2a2a2a;
+    }
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .sidebar {
+        display: none !important;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+    
+    .card-hover {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+    }
+}
+
+/* Utility classes for responsive design */
+.mobile-only {
+    display: block;
+}
+
+.tablet-up {
+    display: none;
+}
+
+.desktop-up {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .mobile-only {
+        display: none;
+    }
+    
+    .tablet-up {
+        display: block;
+    }
+}
+
+@media (min-width: 1024px) {
+    .tablet-up {
+        display: none;
+    }
+    
+    .desktop-up {
+        display: block;
+    }
+}
+
+/* Responsive typography */
+.text-responsive-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+}
+
+.text-responsive-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+.text-responsive-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
+}
+
+.text-responsive-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+}
+
+.text-responsive-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+}
+
+.text-responsive-2xl {
+    font-size: 1.5rem;
+    line-height: 2rem;
+}
+
+.text-responsive-3xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+}
+
+.text-responsive-4xl {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+}
+
+@media (min-width: 768px) {
+    .text-responsive-xs {
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+    }
+    
+    .text-responsive-sm {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+    
+    .text-responsive-base {
+        font-size: 1.125rem;
+        line-height: 1.75rem;
+    }
+    
+    .text-responsive-lg {
+        font-size: 1.25rem;
+        line-height: 1.75rem;
+    }
+    
+    .text-responsive-xl {
+        font-size: 1.5rem;
+        line-height: 2rem;
+    }
+    
+    .text-responsive-2xl {
+        font-size: 1.875rem;
+        line-height: 2.25rem;
+    }
+    
+    .text-responsive-3xl {
+        font-size: 2.25rem;
+        line-height: 2.5rem;
+    }
+    
+    .text-responsive-4xl {
+        font-size: 3rem;
+        line-height: 1;
+    }
+}
+
+/* Responsive spacing */
+.p-responsive {
+    padding: 1rem;
+}
+
+.m-responsive {
+    margin: 1rem;
+}
+
+@media (min-width: 768px) {
+    .p-responsive {
+        padding: 1.5rem;
+    }
+    
+    .m-responsive {
+        margin: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .p-responsive {
+        padding: 2rem;
+    }
+    
+    .m-responsive {
+        margin: 2rem;
+    }
+}
+
+/* Responsive grid system */
+.grid-responsive {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+    .grid-responsive {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid-responsive {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+}
+
+/* Responsive flexbox */
+.flex-responsive {
+    flex-direction: column;
+}
+
+@media (min-width: 768px) {
+    .flex-responsive {
+        flex-direction: row;
+    }
+}

@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPS Platform Admin Panel</title>
+    <meta name="description" content="Admin panel for VPS hosting platform - manage users, services, and system settings.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#64748b',
+                        accent: '#f59e0b',
+                        success: '#10b981',
+                        danger: '#ef4444',
+                        warning: '#f59e0b',
+                        info: '#3b82f6'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom Styles -->
+    <style>
+        .sidebar-transition {
+            transition: all 0.3s ease;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .status-online {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-40">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <button onclick="toggleSidebar()" class="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 lg:hidden">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="flex items-center ml-4">
+                        <span class="text-xl font-bold text-primary">🚀 VPS Platform Admin</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Notifications -->
+                    <div class="relative">
+                        <button onclick="toggleNotifications()" class="p-2 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100 relative">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
+                        </button>
+                        
+                        <!-- Notifications Dropdown -->
+                        <div id="notificationsDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200">
+                            <div class="p-4 border-b border-gray-200">
+                                <h3 class="text-sm font-semibold text-gray-900">System Notifications</h3>
+                            </div>
+                            <div class="max-h-96 overflow-y-auto">
+                                <div class="p-4 hover:bg-gray-50 border-b border-gray-100">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-gray-900">New user registered</p>
+                                            <p class="text-xs text-gray-500">john.doe@example.com joined the platform</p>
+                                            <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4 hover:bg-gray-50 border-b border-gray-100">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-gray-900">High server load detected</p>
+                                        <p class="text-xs text-gray-500">Server-01 CPU usage at 85%</p>
+                                            <p class="text-xs text-gray-400 mt-1">5 minutes ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4 hover:bg-gray-50 border-b border-gray-100">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-gray-900">Payment received</p>
+                                            <p class="text-xs text-gray-500">Professional plan payment from user@example.com</p>
+                                            <p class="text-xs text-gray-400 mt-1">10 minutes ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 border-t border-gray-200">
+                                <a href="#" class="text-sm text-primary hover:underline">View all notifications</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Admin User Menu -->
+                    <div class="relative">
+                        <button onclick="toggleUserMenu()" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                            <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Admin&background=dc2626&color=fff" alt="Admin">
+                            <span class="ml-2 text-gray-700 font-medium hidden md:block">Admin User</span>
+                            <i class="fas fa-chevron-down ml-2 text-gray-400"></i>
+                        </button>
+                        
+                        <!-- User Dropdown -->
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200">
+                            <div class="p-3 border-b border-gray-200">
+                                <p class="text-sm font-medium text-gray-900">Admin User</p>
+                                <p class="text-xs text-gray-500">admin@vpsplatform.in</p>
+                            </div>
+                            <div class="py-1">
+                                <a href="#" onclick="showSettings()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-cog mr-2"></i> Settings
+                                </a>
+                                <a href="#" onclick="showSystemLogs()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-file-alt mr-2"></i> System Logs
+                                </a>
+                                <div class="border-t border-gray-200 mt-1 pt-1">
+                                    <a href="#" onclick="logout()" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-16 h-full w-64 bg-white shadow-lg border-r border-gray-200 sidebar-transition z-30 transform -translate-x-full lg:translate-x-0">
+        <div class="h-full overflow-y-auto">
+            <nav class="p-4 space-y-2">
+                <a href="#dashboard" onclick="showSection('dashboard')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition-colors">
+                    <i class="fas fa-tachometer-alt w-5"></i>
+                    <span class="ml-3">Dashboard</span>
+                </a>
+                
+                <a href="#users" onclick="showSection('users')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition-colors">
+                    <i class="fas fa-users w-5"></i>
+                    <span class="ml-3">Users</span>
+                </a>
+                
+                <a href="#vps" onclick="showSection('vps')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition-colors">
+                    <i class="fas fa-server w-5"></i>
+                    <span class="ml-3">VPS Instances</span>
+                </a>
+                
+                <a href="#billing" onclick="showSection('billing')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition-colors">
+                    <i class="fas fa-credit-card w-5"></i>
+                    <span class="ml-3">Billing</span>
+                </a>
+                
+                <a href="#support" onclick="showSection('support')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition-colors">
+                    <i class="fas fa-headset w-5"></i>
+                    <span class="ml-3">Support Tickets</span>
+                </a>
+                
+                <a href="#analytics" onclick="showSection('analytics')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition-colors">
+                    <i class="fas fa-chart-line w-5"></i>
+                    <span class="ml-3">Analytics</span>
+                </a>
+                
+                <div class="pt-4 mt-4 border-t border-gray-200">
+                    <a href="#system" onclick="showSection('system')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition-colors">
+                        <i class="fas fa-cogs w-5"></i>
+                        <span class="ml-3">System Settings</span>
+                    </a>
+                    
+                    <a href="#logs" onclick="showSection('logs')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition-colors">
+                        <i class="fas fa-file-alt w-5"></i>
+                        <span class="ml-3">Logs</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="lg:ml-64 pt-16">
+        <div class="p-6">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="content-section">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+                    <p class="text-gray-600">Overview of your VPS hosting platform.</p>
+                </div>
+
+                <!-- System Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Total Users</p>
+                                <p class="text-2xl font-bold text-gray-900" id="totalUsers">247</p>
+                                <p class="text-xs text-green-600">+12 this week</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-users text-blue-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Active VPS</p>
+                                <p class="text-2xl font-bold text-gray-900" id="activeVpsCount">156</p>
+                                <p class="text-xs text-green-600">+8 this week</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-server text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Monthly Revenue</p>
+                                <p class="text-2xl font-bold text-gray-900">₹1,24,750</p>
+                                <p class="text-xs text-green-600">+15% this month</p>
+                            </div>
+                            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-rupee-sign text-yellow-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">System Health</p>
+                                <p class="text-2xl font-bold text-gray-900">98.5%</p>
+                                <p class="text-xs text-green-600">All systems operational</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-heartbeat text-green-600 status-online"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">User Growth</h3>
+                        <canvas id="userGrowthChart" width="400" height="200"></canvas>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Revenue Overview</h3>
+                        <canvas id="revenueChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                    <div class="space-y-3" id="recentActivity">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">New user registration</p>
+                                    <p class="text-xs text-gray-500">john.doe@example.com - Professional plan</p>
+                                    <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+                                </div>
+                            </div>
+                            <span class="text-xs text-gray-500">User</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">VPS provisioned</p>
+                                    <p class="text-xs text-gray-500">web-server-01 for user@example.com</p>
+                                    <p class="text-xs text-gray-400 mt-1">5 minutes ago</p>
+                                </div>
+                            </div>
+                            <span class="text-xs text-gray-500">VPS</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-yellow-500 rounded-full mr-3"></div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Payment received</p>
+                                    <p class="text-xs text-gray-500">₹999 - Professional plan</p>
+                                    <p class="text-xs text-gray-400 mt-1">10 minutes ago</p>
+                                </div>
+                            </div>
+                            <span class="text-xs text-gray-500">Billing</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Users Management Section -->
+            <section id="users-section" class="content-section hidden">
+                <div class="mb-8 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">User Management</h1>
+                        <p class="text-gray-600">Manage user accounts and permissions.</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="openCreateUserModal()" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-user-plus mr-2"></i> Add User
+                        </button>
+                        <button onclick="exportUsers()" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-download mr-2"></i> Export
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                            <input type="text" id="userSearch" placeholder="Search users..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                            <select id="roleFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-transparent">
+                                <option value="">All Roles</option>
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                                <option value="superadmin">Super Admin</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                            <select id="statusFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-transparent">
+                                <option value="">All Status</option>
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Plan</label>
+                            <select id="planFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-transparent">
+                                <option value="">All Plans</option>
+                                <option value="starter">Starter</option>
+                                <option value="professional">Professional</option>
+                                <option value="business">Business</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="usersTableBody">
+                                <!-- User rows will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-6 flex items-center justify-between">
+                    <div class="text-sm text-gray-700">
+                        Showing <span id="showingFrom">1</span> to <span id="showingTo">10</span> of <span id="totalUsers">0</span> results
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="previousPage()" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                            Previous
+                        </button>
+                        <button onclick="nextPage()" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                            Next
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Other sections (VPS, Billing, Support, Analytics, System, Logs) -->
+            <section id="vps-section" class="content-section hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">VPS Instances</h1>
+                    <p class="text-gray-600">Monitor and manage all virtual machines.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <p class="text-center text-gray-500">VPS management interface would be implemented here</p>
+                </div>
+            </section>
+
+            <section id="billing-section" class="content-section hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">Billing & Invoices</h1>
+                    <p class="text-gray-600">Manage subscriptions, payments, and invoices.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <p class="text-center text-gray-500">Billing management interface would be implemented here</p>
+                </div>
+            </section>
+
+            <section id="support-section" class="content-section hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">Support Tickets</h1>
+                    <p class="text-gray-600">Handle customer support requests.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <p class="text-center text-gray-500">Support ticket system would be implemented here</p>
+                </div>
+            </section>
+
+            <section id="analytics-section" class="content-section hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">Analytics</h1>
+                    <p class="text-gray-600">Platform analytics and insights.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <p class="text-center text-gray-500">Analytics dashboard would be implemented here</p>
+                </div>
+            </section>
+
+            <section id="system-section" class="content-section hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">System Settings</h1>
+                    <p class="text-gray-600">Configure system-wide settings.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <p class="text-center text-gray-500">System settings interface would be implemented here</p>
+                </div>
+            </section>
+
+            <section id="logs-section" class="content-section hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">System Logs</h1>
+                    <p class="text-gray-600">View system logs and audit trails.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <p class="text-center text-gray-500">System logs viewer would be implemented here</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Create User Modal -->
+    <div id="createUserModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-8 relative">
+            <button onclick="closeCreateUserModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Create New User</h2>
+            
+            <form onsubmit="handleCreateUser(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Name</label>
+                    <input type="text" id="newUserName" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="John Doe">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Email</label>
+                    <input type="email" id="newUserEmail" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="john@example.com">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                    <input type="password" id="newUserPassword" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="•••••••••••">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Role</label>
+                    <select id="newUserRole" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                        <option value="superadmin">Super Admin</option>
+                    </select>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Initial Plan</label>
+                    <select id="newUserPlan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="">No Plan (Trial)</option>
+                        <option value="starter">Starter</option>
+                        <option value="professional">Professional</option>
+                        <option value="business">Business</option>
+                    </select>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeCreateUserModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        Create User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toastMessage">Success!</span>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <div class="loading-spinner mx-auto mb-4"></div>
+            <p class="text-gray-700">Loading...</p>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Global variables
+        let currentUser = null;
+        let authToken = localStorage.getItem('authToken');
+        let currentPage = 1;
+        let usersPerPage = 10;
+        let totalUsers = 0;
+        let allUsers = [];
+
+        // Initialize admin panel
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthStatus();
+            initializeEventListeners();
+            loadDashboardData();
+        });
+
+        // Check authentication status
+        function checkAuthStatus() {
+            if (!authToken) {
+                window.location.href = '/landing-page/index.html';
+                return;
+            }
+
+            // Verify admin token with auth service
+            fetch('http://localhost:3001/api/auth/profile', {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Invalid token');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success && (data.data.role === 'admin' || data.data.role === 'superadmin')) {
+                    currentUser = data.data;
+                    updateUserInterface();
+                } else {
+                    throw new Error('Insufficient permissions');
+                }
+            })
+            .catch(error => {
+                console.error('Auth check failed:', error);
+                localStorage.removeItem('authToken');
+                window.location.href = '/landing-page/index.html';
+            });
+        }
+
+        // Update user interface
+        function updateUserInterface() {
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('dropdownUserName').textContent = currentUser.name;
+                document.getElementById('dropdownUserEmail').textContent = currentUser.email;
+            }
+        }
+
+        // Initialize event listeners
+        function initializeEventListeners() {
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                const notificationsDropdown = document.getElementById('notificationsDropdown');
+                const userDropdown = document.getElementById('userDropdown');
+                
+                if (!e.target.closest('#notificationsDropdown') && !e.target.closest('button[onclick="toggleNotifications()"]')) {
+                    notificationsDropdown.classList.add('hidden');
+                }
+                
+                if (!e.target.closest('#userDropdown') && !e.target.closest('button[onclick="toggleUserMenu()"]')) {
+                    userDropdown.classList.add('hidden');
+                }
+            });
+
+            // Search and filter listeners
+            document.getElementById('userSearch').addEventListener('input', debounce(filterUsers, 300));
+            document.getElementById('roleFilter').addEventListener('change', filterUsers);
+            document.getElementById('statusFilter').addEventListener('change', filterUsers);
+            document.getElementById('planFilter').addEventListener('change', filterUsers);
+        }
+
+        // Debounce function
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => {
+                        func(...args);
+                    }, wait);
+                };
+                clearTimeout(timeout);
+                executedFunction();
+            };
+        }
+
+        // Toggle functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationsDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Section navigation
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(`${section}-section`);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                
+                // Update sidebar active state
+                document.querySelectorAll('.sidebar-item').forEach(el => {
+                    el.classList.remove('bg-primary', 'text-white');
+                    el.classList.add('text-gray-700');
+                });
+                
+                const activeItem = document.querySelector(`a[href="#${section}"]`);
+                if (activeItem) {
+                    activeItem.classList.remove('text-gray-700');
+                    activeItem.classList.add('bg-primary', 'text-white');
+                }
+                
+                // Load section-specific data
+                loadSectionData(section);
+            }
+            
+            // Close mobile sidebar
+            if (window.innerWidth < 1024) {
+                toggleSidebar();
+            }
+        }
+
+        // Load section-specific data
+        function loadSectionData(section) {
+            switch (section) {
+                case 'dashboard':
+                    loadDashboardData();
+                    break;
+                case 'users':
+                    loadUsersData();
+                    break;
+                default:
+                    // Other sections would have their own data loading
+                    break;
+            }
+        }
+
+        // Load dashboard data
+        function loadDashboardData() {
+            // Simulate loading system stats
+            setTimeout(() => {
+                updateSystemStats();
+                initializeCharts();
+            }, 500);
+        }
+
+        // Update system stats
+        function updateSystemStats() {
+            // Simulate API calls to get real stats
+            const stats = {
+                totalUsers: 247,
+                activeVPS: 156,
+                monthlyRevenue: 124750,
+                systemHealth: 98.5
+            };
+
+            document.getElementById('totalUsers').textContent = stats.totalUsers;
+            document.getElementById('activeVPSCount').textContent = stats.activeVPS;
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            // User Growth Chart
+            const userGrowthCtx = document.getElementById('userGrowthChart');
+            if (userGrowthCtx) {
+                new Chart(userGrowthCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                        datasets: [{
+                            label: 'New Users',
+                            data: [12, 19, 15, 25, 31, 28],
+                            borderColor: 'rgb(59, 130, 246)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart');
+            if (revenueCtx) {
+                new Chart(revenueCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Revenue (₹)',
+                            data: [85000, 92000, 105000, 118000, 124750, 132000],
+                            backgroundColor: 'rgba(34, 197, 94, 0.8)',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '₹' + value.toLocaleString('en-IN');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Load users data
+        function loadUsersData() {
+            showLoading();
+            
+            // Simulate API call to get users
+            setTimeout(() => {
+                // Mock user data
+                allUsers = [
+                    {
+                        id: 1,
+                        name: 'John Doe',
+                        email: 'john.doe@example.com',
+                        role: 'user',
+                        isActive: true,
+                        subscription: {
+                            plan: 'professional',
+                            status: 'active'
+                        },
+                        createdAt: '2024-01-15T10:30:00Z',
+                        lastLogin: '2024-01-20T14:25:00Z'
+                    },
+                    {
+                        id: 2,
+                        name: 'Jane Smith',
+                        email: 'jane.smith@example.com',
+                        role: 'user',
+                        isActive: true,
+                        subscription: {
+                            plan: 'business',
+                            status: 'active'
+                        },
+                        createdAt: '2024-01-10T09:15:00Z',
+                        lastLogin: '2024-01-19T16:40:00Z'
+                    },
+                    {
+                        id: 3,
+                        name: 'Admin User',
+                        email: 'admin@vpsplatform.in',
+                        role: 'admin',
+                        isActive: true,
+                        subscription: null,
+                        createdAt: '2024-01-01T00:00:00Z',
+                        lastLogin: '2024-01-20T18:00:00Z'
+                    },
+                    // Add more mock users as needed
+                ];
+
+                // Add more mock users to reach 247 total
+                for (let i = 4; i <= 247; i++) {
+                    allUsers.push({
+                        id: i,
+                        name: `User ${i}`,
+                        email: `user${i}@example.com`,
+                        role: i % 20 === 0 ? 'admin' : 'user',
+                        isActive: Math.random() > 0.05, // 95% active
+                        subscription: {
+                            plan: ['starter', 'professional', 'business'][Math.floor(Math.random() * 3)],
+                            status: Math.random() > 0.1 ? 'active' : 'trial'
+                        },
+                        createdAt: new Date(2024, 0, Math.floor(Math.random() * 20), Math.floor(Math.random() * 28) + 1, Math.floor(Math.random() * 30) + 1).toISOString(),
+                        lastLogin: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString()
+                    });
+                }
+
+                totalUsers = allUsers.length;
+                renderUsersTable();
+                updatePagination();
+                hideLoading();
+            }, 1000);
+        }
+
+        // Filter users
+        function filterUsers() {
+            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+            const roleFilter = document.getElementById('roleFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const planFilter = document.getElementById('planFilter').value;
+
+            let filteredUsers = allUsers;
+
+            if (searchTerm) {
+                filteredUsers = filteredUsers.filter(user => 
+                    user.name.toLowerCase().includes(searchTerm) ||
+                    user.email.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (roleFilter) {
+                filteredUsers = filteredUsers.filter(user => user.role === roleFilter);
+            }
+
+            if (statusFilter !== '') {
+                filteredUsers = filteredUsers.filter(user => user.isActive.toString() === statusFilter);
+            }
+
+            if (planFilter) {
+                filteredUsers = filteredUsers.filter(user => 
+                    user.subscription && user.subscription.plan === planFilter
+                );
+            }
+
+            allUsers = filteredUsers;
+            currentPage = 1;
+            totalUsers = allUsers.length;
+            
+            renderUsersTable();
+            updatePagination();
+        }
+
+        // Render users table
+        function renderUsersTable() {
+            const tableBody = document.getElementById('usersTableBody');
+            const start = (currentPage - 1) * usersPerPage;
+            const end = start + usersPerPage;
+            const pageUsers = allUsers.slice(start, end);
+
+            tableBody.innerHTML = '';
+
+            pageUsers.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                                <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=3b82f6&color=fff" alt="${user.name}">
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${user.name}</div>
+                                <div class="text-xs text-gray-500">${user.email}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === 'superadmin' ? 'bg-purple-100 text-purple-800' : user.role === 'admin' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}">
+                            ${user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            ${user.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${user.subscription ? `
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.subscription.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                ${user.subscription.plan.charAt(0).toUpperCase() + user.subscription.plan.slice(1)}
+                            </span>
+                        ` : '<span class="text-gray-400">No Plan</span>'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${new Date(user.createdAt).toLocaleDateString()}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="editUser(${user.id})" class="text-primary hover:text-blue-900 mr-3">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="toggleUserStatus(${user.id})" class="text-yellow-600 hover:text-yellow-900 mr-3">
+                            <i class="fas fa-${user.isActive ? 'fa-pause' : 'fa-play'}"></i>
+                        </button>
+                        <button onclick="deleteUser(${user.id})" class="text-red-600 hover:text-red-900">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Update pagination
+        function updatePagination() {
+            const totalPages = Math.ceil(totalUsers / usersPerPage);
+            const showingFrom = (currentPage - 1) * usersPerPage + 1;
+            const showingTo = Math.min(currentPage * usersPerPage, totalUsers);
+
+            document.getElementById('showingFrom').textContent = showingFrom;
+            document.getElementById('showingTo').textContent = showingTo;
+            document.getElementById('totalUsers').textContent = totalUsers;
+
+            // Update pagination buttons
+            document.querySelector('button[onclick="previousPage()"]').disabled = currentPage === 1;
+            document.querySelector('button[onclick="nextPage()"]').disabled = currentPage === totalPages;
+        }
+
+        // Pagination functions
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderUsersTable();
+                updatePagination();
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(totalUsers / usersPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderUsersTable();
+                updatePagination();
+            }
+        }
+
+        // User management functions
+        function openCreateUserModal() {
+            document.getElementById('createUserModal').classList.remove('hidden');
+        }
+
+        function closeCreateUserModal() {
+            document.getElementById('createUserModal').classList.add('hidden');
+            // Reset form
+            document.getElementById('newUserName').value = '';
+            document.getElementById('newUserEmail').value = '';
+            document.getElementById('newUserPassword').value = '';
+            document.getElementById('newUserRole').value = 'user';
+            document.getElementById('newUserPlan').value = '';
+        }
+
+        function handleCreateUser(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('newUserName').value;
+            const email = document.getElementById('newUserEmail').value;
+            const password = document.getElementById('newUserPassword').value;
+            const role = document.getElementById('newUserRole').value;
+            const plan = document.getElementById('newUserPlan').value;
+
+            // Validate form
+            if (!name || !email || !password) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
+
+            // Simulate API call to create user
+            showLoading();
+            
+            setTimeout(() => {
+                const newUser = {
+                    id: Date.now(),
+                    name,
+                    email,
+                    role,
+                    isActive: true,
+                    subscription: plan ? {
+                        plan: plan,
+                        status: 'trial',
+                        trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+                    } : null,
+                    createdAt: new Date().toISOString(),
+                    lastLogin: new Date().toISOString()
+                };
+
+                allUsers.unshift(newUser);
+                totalUsers++;
+                currentPage = 1;
+                
+                renderUsersTable();
+                updatePagination();
+                closeCreateUserModal();
+                hideLoading();
+                
+                showToast(`User ${name} created successfully`);
+            }, 1000);
+        }
+
+        function editUser(userId) {
+            const user = allUsers.find(u => u.id === userId);
+            if (!user) return;
+
+            // In a real implementation, this would open an edit modal
+            showToast(`Editing user: ${user.name}`);
+        }
+
+        function toggleUserStatus(userId) {
+            const user = allUsers.find(u => u.id === userId);
+            if (!user) return;
+
+            user.isActive = !user.isActive;
+            
+            // Simulate API call to update user status
+            showLoading();
+            
+            setTimeout(() => {
+                renderUsersTable();
+                hideLoading();
+                showToast(`User ${user.name} ${user.isActive ? 'activated' : 'deactivated'} successfully`);
+            }, 500);
+        }
+
+        function deleteUser(userId) {
+            const user = allUsers.find(u => u.id === userId);
+            if (!user) return;
+
+            if (confirm(`Are you sure you want to delete user ${user.name}? This action cannot be undone.`)) {
+                showLoading();
+                
+                setTimeout(() => {
+                    allUsers = allUsers.filter(u => u.id !== userId);
+                    totalUsers = allUsers.length;
+                    
+                    // Adjust current page if necessary
+                    const totalPages = Math.ceil(totalUsers / usersPerPage);
+                    if (currentPage > totalPages && currentPage > 1) {
+                        currentPage = totalPages;
+                    }
+                    
+                    renderUsersTable();
+                    updatePagination();
+                    hideLoading();
+                    
+                    showToast(`User ${user.name} deleted successfully`);
+                }, 1000);
+            }
+        }
+
+        // Settings and other functions
+        function showSettings() {
+            showToast('Opening settings...');
+            document.getElementById('userDropdown').classList.add('hidden');
+        }
+
+        function showSystemLogs() {
+            showSection('logs');
+            document.getElementById('userDropdown').classList.add('hidden');
+        }
+
+        function exportUsers() {
+            showToast('Exporting users data...');
+            // In a real implementation, this would generate and download a CSV/Excel file
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('authToken');
+                showToast('Logging out...');
+                setTimeout(() => {
+                    window.location.href = '/landing-page/index.html';
+                }, 1000);
+            }
+        }
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            
+            // Update toast color based on type
+            toast.className = toast.className.replace(/bg-\w+-500/g, `bg-${type === 'success' ? 'green' : type === 'error' ? 'red' : 'blue'}-500`);
+            
+            toast.classList.remove('translate-x-full');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3000);
+        }
+
+        // Loading overlay
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        // Simulate real-time updates
+        setInterval(() => {
+            if (currentSection === 'dashboard') {
+                // Update random stats
+                const stats = {
+                    totalUsers: parseInt(document.getElementById('totalUsers').textContent),
+                    activeVPS: parseInt(document.getElementById('activeVPSCount').textContent)
+                };
+                
+                // Simulate small changes
+                if (Math.random() > 0.7) {
+                    stats.totalUsers += Math.floor(Math.random() * 3) - 1;
+                    document.getElementById('totalUsers').textContent = stats.totalUsers;
+                }
+                
+                if (Math.random() > 0.8) {
+                    stats.activeVPS += Math.floor(Math.random() * 3) - 1;
+                    document.getElementById('activeVPSCount').textContent = stats.activeVPS;
+                }
+            }
+        }, 30000); // Update every 30 seconds
+    </script>
+</body>
+</html>

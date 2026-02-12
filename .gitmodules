@@ -1,0 +1,6 @@
+[submodule "flint"]
+	path = flint
+	url = https://github.com/ccheshirecat/flint.git
+[submodule "Paymenter"]
+	path = Paymenter
+	url = https://github.com/Paymenter/Paymenter.git
