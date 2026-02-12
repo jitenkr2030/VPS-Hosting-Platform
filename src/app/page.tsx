@@ -4,267 +4,237 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Check, Server, Shield, Zap, Users, Headphones, Cpu, HardDrive, Wifi, Building, IndianRupee, MessageCircle, Award, FileText, Lock, HelpCircle, Star, Phone } from 'lucide-react'
+import { Check, Server, Shield, Zap, Users, Headphones, Cpu, HardDrive, Wifi, Building, IndianRupee, MessageCircle, Award, FileText, Lock, HelpCircle, Star, Phone, Cloud, Database, Globe, Settings, Monitor, AlertTriangle, Key } from 'lucide-react'
 
 export default function Home() {
-  const [selectedPlan, setSelectedPlan] = useState('professional')
-  const [productCategory, setProductCategory] = useState('all')
-  const [showTemplates, setShowTemplates] = useState(false)
+  const [selectedSolution, setSelectedSolution] = useState('private-cloud')
+  const [targetMarket, setTargetMarket] = useState('all')
 
-  const plans = [
+  const solutions = [
     {
-      id: 'free',
-      name: 'Free VPS',
-      price: '₹0',
-      description: 'Perfect for trying out our platform - no credit card required',
-      category: 'technical',
-      badge: 'FREE',
-      tagline: 'Try before you buy - 30 days free',
+      id: 'private-cloud',
+      name: 'Private Cloud-in-a-Box',
+      price: 'Custom Quote',
+      description: 'Complete on-premise cloud infrastructure for enterprises requiring data sovereignty',
+      category: 'enterprise',
+      badge: 'ENTERPRISE',
+      tagline: 'Data Sovereignty & Compliance Guaranteed',
+      icon: Cloud,
       features: [
-        '0.5 vCPU Core (shared)',
-        '512 MB RAM',
-        '10 GB NVMe SSD',
-        '500 GB Bandwidth',
-        '1 Snapshot (manual)',
-        'Basic monitoring',
-        'Community support (forum)',
-        'Full root access',
-        'Ubuntu 22.04 LTS',
-        '99.9% Uptime SLA',
-        '30 days trial'
+        'Complete on-premise cloud infrastructure',
+        'Data residency within your organization',
+        'GDPR, HIPAA, ISO27001 compliance built-in',
+        'White-label customization for your brand',
+        'Air-gapped deployment capability',
+        'Enterprise security with MFA & RBAC',
+        'Real-time monitoring & analytics dashboard',
+        'Automated compliance reporting',
+        'Bootable ISO for offline installation',
+        'Multi-tenant architecture with isolation',
+        '99.9% uptime with SLA guarantee',
+        '24/7 enterprise support'
       ],
-      color: 'border-green-400',
-      limitations: [
-        'Max 1 VM per account',
-        'No custom OS images',
-        'No API access',
-        'No priority support',
-        'Auto-suspend after 30 days'
+      color: 'border-purple-500',
+      highlights: [
+        '60-80% cost savings vs public cloud',
+        'Complete data control & ownership',
+        'No vendor lock-in',
+        'Custom integration capabilities'
       ]
     },
     {
-      id: 'starter',
-      name: 'Starter VPS',
-      price: '₹499',
-      description: 'Perfect for developers and small projects',
-      category: 'technical',
-      features: [
-        '1 vCPU Core',
-        '2 GB RAM',
-        '40 GB NVMe SSD',
-        '2 TB Bandwidth',
-        '1 Snapshot',
-        'Basic monitoring',
-        'Email support',
-        'Full root access',
-        'API access',
-        '99.9% Uptime SLA'
-      ],
-      color: 'border-gray-200'
-    },
-    {
-      id: 'professional',
-      name: 'Professional VPS',
-      price: '₹999',
-      description: 'Ideal for growing businesses and developers',
-      category: 'technical',
-      popular: true,
-      badge: 'Most Popular',
-      features: [
-        '2 vCPU Cores',
-        '4 GB RAM',
-        '80 GB NVMe SSD',
-        '4 TB Bandwidth',
-        '3 Snapshots',
-        'Advanced monitoring',
-        'Priority support',
-        'Full root access',
-        'API access',
-        'Free backups',
-        '99.9% Uptime SLA'
-      ],
-      color: 'border-indigo-500'
-    },
-    {
-      id: 'business',
-      name: 'Business VPS',
-      price: '₹1,999',
-      description: 'High-performance VPS for demanding applications',
-      category: 'technical',
-      features: [
-        '4 vCPU Cores',
-        '8 GB RAM',
-        '160 GB NVMe SSD',
-        '8 TB Bandwidth',
-        'Unlimited snapshots',
-        'Premium monitoring',
-        '24/7 support',
-        'Full root access',
-        'API access',
-        'Daily backups',
-        'DDoS protection',
-        '99.9% Uptime SLA'
-      ],
-      color: 'border-gray-200'
-    },
-    {
-      id: 'msme',
-      name: 'MSME-VPS Business Server',
-      price: '₹999',
-      description: 'Complete business-ready server for Indian MSMEs',
-      category: 'business',
-      badge: 'MSME Focused',
-      features: [
-        '2 vCPU Cores',
-        '4 GB RAM',
-        '80 GB SSD Storage',
-        '1 Public IP Address',
-        'Daily Automated Backups',
-        'Free SSL Certificate',
-        'Managed Security & Updates',
-        'Indian WhatsApp & Email Support',
-        'No Technical Skills Required',
-        'GST-Compliant Invoicing',
-        '99% Uptime Guarantee',
-        'Pre-configured for Business Apps'
-      ],
-      color: 'border-green-500',
-      tagline: 'Simple, Secure, Managed VPS for Small Businesses'
-    }
-  ]
-
-  const addons = [
-    {
-      name: 'Managed Support',
-      price: '₹299/month',
-      description: 'Priority support with dedicated account manager',
-      icon: Headphones
-    },
-    {
-      name: 'Extra Backups',
-      price: '₹99/month', 
-      description: 'Additional backup storage with 30-day retention',
-      icon: Shield
-    },
-    {
-      name: 'Setup & Migration',
-      price: '₹499-₹999',
-      description: 'One-time setup and data migration service',
-      icon: Zap
-    }
-  ]
-
-  const features = [
-    {
+      id: 'government',
+      name: 'Government Cloud',
+      price: 'Custom Quote',
+      description: 'Secure cloud infrastructure for government agencies and public sector organizations',
+      category: 'government',
+      badge: 'GOVERNMENT',
+      tagline: 'Secure & Compliant for Public Sector',
       icon: Building,
-      title: 'Business-Ready Server',
-      description: 'Pre-configured for WordPress, ERPNext, accounting software, and custom business applications'
+      features: [
+        'Government audit compliance',
+        'Citizen data protection',
+        'Secure inter-departmental connectivity',
+        'National data residency',
+        'Defense-grade security',
+        'Regulatory reporting automation',
+        'Multi-language support',
+        'Custom workflow integration',
+        'Disaster recovery capabilities',
+        'High availability clustering',
+        'Secure remote access',
+        'Comprehensive audit trails'
+      ],
+      color: 'border-blue-600',
+      highlights: [
+        'Meets government security standards',
+        'Complete audit trail logging',
+        'National data sovereignty',
+        'Custom clearance levels'
+      ]
     },
+    {
+      id: 'education',
+      name: 'Education Cloud',
+      price: 'Custom Quote',
+      description: 'Campus-wide cloud infrastructure for educational institutions and universities',
+      category: 'education',
+      badge: 'EDUCATION',
+      tagline: 'Campus-Wide Infrastructure for Learning',
+      icon: Award,
+      features: [
+        'Campus-wide cloud deployment',
+        'Student/faculty access controls',
+        'Research computing infrastructure',
+        'Learning Management System hosting',
+        'Library system integration',
+        'Departmental resource isolation',
+        'Collaboration tools integration',
+        'Academic calendar integration',
+        'Secure student data handling',
+        'Scalable for growing institutions',
+        'Budget-friendly pricing models',
+        'Educational compliance standards'
+      ],
+      color: 'border-green-600',
+      highlights: [
+        'Special pricing for education',
+        'Research data protection',
+        'Campus network integration',
+        'Student privacy protection'
+      ]
+    },
+    {
+      id: 'healthcare',
+      name: 'Healthcare Cloud',
+      price: 'Custom Quote',
+      description: 'HIPAA-compliant cloud infrastructure for healthcare organizations and hospitals',
+      category: 'healthcare',
+      badge: 'HEALTHCARE',
+      tagline: 'HIPAA-Compliant Healthcare Infrastructure',
+      icon: Shield,
+      features: [
+        'HIPAA compliance built-in',
+        'Patient data encryption & protection',
+        'Secure medical record systems',
+        'Telemedicine infrastructure',
+        'Research & clinical trial support',
+        'Disaster recovery for healthcare',
+        'Healthcare audit compliance',
+        'Secure provider access controls',
+        'Medical device integration',
+        'Emergency response systems',
+        'Data backup & recovery',
+        'Healthcare analytics dashboard'
+      ],
+      color: 'border-red-600',
+      highlights: [
+        'HIPAA compliance guaranteed',
+        'Patient data protection',
+        'Healthcare-specific workflows',
+        'Emergency response ready'
+      ]
+    }
+  ]
+
+  const enterpriseFeatures = [
     {
       icon: Shield,
-      title: 'Fully Managed Security',
-      description: 'We handle security updates, patches, and monitoring so you can focus on your business'
+      title: 'Enterprise Security',
+      description: 'Military-grade security with MFA, RBAC, and comprehensive audit trails'
     },
     {
-      icon: MessageCircle,
-      title: 'Indian WhatsApp Support',
-      description: 'Local support in Hindi, English, and regional languages via WhatsApp and email'
+      icon: Database,
+      title: 'Data Sovereignty',
+      description: 'Complete data control with 100% data residency guarantees'
     },
     {
-      icon: Zap,
-      title: 'No Technical Skills Required',
-      description: 'Simple dashboard designed for business owners - no command line or technical knowledge needed'
+      icon: Settings,
+      title: 'White-Label Solution',
+      description: 'Complete branding customization with your organization\'s identity'
     },
     {
-      icon: HardDrive,
-      title: 'Automated Backups',
-      description: 'Daily automatic backups with one-click restore to protect your business data'
+      icon: Monitor,
+      title: 'Real-Time Monitoring',
+      description: 'Comprehensive monitoring and analytics with customizable dashboards'
     },
     {
+      icon: Globe,
+      title: 'Compliance Ready',
+      description: 'GDPR, HIPAA, ISO27001 compliance with automated reporting'
+    },
+    {
+      icon: Cloud,
+      title: 'Offline Operation',
+      description: 'Full functionality without internet connectivity (air-gapped deployment)'
+    }
+  ]
+
+  const targetMarkets = [
+    {
+      id: 'government',
+      name: 'Government',
+      icon: Building,
+      description: 'Secure infrastructure for government agencies',
+      solutions: ['Defense organizations', 'Education departments', 'Healthcare ministries', 'Finance departments']
+    },
+    {
+      id: 'education',
+      name: 'Education',
       icon: Award,
-      title: 'MSME Registered Provider',
-      description: 'Officially MSME (Udyam) registered with GST-compliant billing and Indian data centers'
-    }
-  ]
-
-  const useCases = [
-    {
-      title: 'WordPress Websites',
-      description: 'Perfect for business websites, blogs, and e-commerce stores',
-      icon: '🌐'
+      description: 'Campus-wide cloud for educational institutions',
+      solutions: ['Universities', 'Research institutions', 'K-12 schools', 'Educational departments']
     },
     {
-      title: 'ERPNext & Odoo',
-      description: 'Host your business management and ERP software',
-      icon: '📊'
+      id: 'healthcare',
+      name: 'Healthcare',
+      icon: Shield,
+      description: 'HIPAA-compliant infrastructure for healthcare',
+      solutions: ['Hospitals', 'Clinics', 'Research organizations', 'Medical schools']
     },
     {
-      title: 'Accounting & GST Software',
-      description: 'Run Tally, Busy, and other accounting applications',
-      icon: '🧾'
-    },
-    {
-      title: 'Custom Applications',
-      description: 'Deploy your business software and databases',
-      icon: '⚙️'
-    }
-  ]
-
-  const testimonials = [
-    {
-      name: 'Rajesh Kumar',
-      business: 'Chartered Accountant Firm',
-      content: 'MSME-VPS made it so easy to host our client portal. No technical knowledge needed, and WhatsApp support is amazing!',
-      rating: 5
-    },
-    {
-      name: 'Priya Sharma',
-      business: 'Educational Institute',
-      content: 'We migrated from shared hosting to MSME-VPS. Our website is faster and we get proper Indian support when needed.',
-      rating: 5
-    },
-    {
-      name: 'Amit Patel',
-      business: 'Small Manufacturing',
-      content: 'Perfect for our ERP system. Managed security means we don\'t have to worry about technical issues.',
-      rating: 5
+      id: 'enterprise',
+      name: 'Enterprise',
+      icon: Server,
+      description: 'Complete infrastructure for large corporations',
+      solutions: ['Fortune 500 companies', 'Manufacturing', 'Financial services', 'Technology firms']
     }
   ]
 
   const stats = [
-    { value: '500+', label: 'MSME Businesses Trust Us' },
-    { value: '99%', label: 'Uptime Guarantee' },
-    { value: '24/7', label: 'WhatsApp Support' },
-    { value: 'GST', label: 'Compliant Billing' }
+    { value: '60-80%', label: 'Cost Savings vs Public Cloud' },
+    { value: '100%', label: 'Data Residency' },
+    { value: '99.9%', label: 'Uptime SLA' },
+    { value: '24/7', label: 'Enterprise Support' }
   ]
 
-  const trustIndicators = [
-    { icon: Award, text: 'MSME Registered' },
-    { icon: FileText, text: 'GST Compliant' },
-    { icon: Shield, text: 'ISO Certified' },
-    { icon: Lock, text: 'Data Privacy' }
+  const complianceBadges = [
+    { name: 'GDPR', description: 'General Data Protection Regulation' },
+    { name: 'HIPAA', description: 'Health Insurance Portability and Accountability Act' },
+    { name: 'ISO27001', description: 'Information Security Management' },
+    { name: 'SOC 2', description: 'Service Organization Control 2' }
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-orange-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
       {/* Navigation */}
       <nav className="fixed w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-200">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-2">
-              <Server className="h-8 w-8 text-indigo-600" />
+              <Cloud className="h-8 w-8 text-purple-600" />
               <div>
-                <span className="text-xl font-bold text-gray-900">Pro VPS Hosting</span>
-                <p className="text-xs text-gray-600">Technical & Business Hosting</p>
+                <span className="text-xl font-bold text-gray-900">Private Cloud-in-a-Box</span>
+                <p className="text-xs text-gray-600">Enterprise On-Premise Solution</p>
               </div>
             </div>
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-600 hover:text-indigo-600 transition">Features</a>
-              <a href="#pricing" className="text-gray-600 hover:text-indigo-600 transition">Pricing</a>
-              <a href="#usecases" className="text-gray-600 hover:text-indigo-600 transition">Use Cases</a>
-              <a href="#testimonials" className="text-gray-600 hover:text-indigo-600 transition">Testimonials</a>
+              <a href="#solutions" className="text-gray-600 hover:text-purple-600 transition">Solutions</a>
+              <a href="#features" className="text-gray-600 hover:text-purple-600 transition">Features</a>
+              <a href="#markets" className="text-gray-600 hover:text-purple-600 transition">Markets</a>
+              <a href="#compliance" className="text-gray-600 hover:text-purple-600 transition">Compliance</a>
               <Button variant="ghost">Login</Button>
-              <Button className="bg-indigo-600 hover:bg-indigo-700">Get Started</Button>
+              <Button className="bg-purple-600 hover:bg-purple-700">Get Quote</Button>
             </div>
           </div>
         </div>
@@ -274,156 +244,191 @@ export default function Home() {
       <section className="pt-20 pb-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <Badge className="bg-green-100 text-green-800 mb-4">
-              <Award className="h-4 w-4 mr-2" />
-              MSME Registered Provider
+            <Badge className="bg-purple-100 text-purple-800 mb-4">
+              <Shield className="h-4 w-4 mr-2" />
+              Enterprise-Grade Private Cloud
             </Badge>
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-              Professional <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">VPS Hosting</span> & <span className="bg-gradient-to-r from-green-600 to-orange-600 bg-clip-text text-transparent">MSME Solutions</span>
+              Private <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Cloud-in-a-Box</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Complete hosting solutions for developers, businesses, and Indian MSMEs. 
-              From technical VPS hosting to managed business servers - we've got you covered.
+              Complete on-premise cloud infrastructure for government, education, healthcare, and enterprises. 
+              Data sovereignty, compliance, and security built-in.
             </p>
             
-            {/* Product Category Selector */}
-            <div className="flex flex-wrap justify-center gap-4 mb-8">
-              <Button 
-                variant={productCategory === 'all' ? 'default' : 'outline'}
-                onClick={() => setProductCategory('all')}
-                className="px-6"
-              >
-                <Server className="h-4 w-4 mr-2" />
-                All Products
-              </Button>
-              <Button 
-                variant={productCategory === 'technical' ? 'default' : 'outline'}
-                onClick={() => setProductCategory('technical')}
-                className="px-6"
-              >
-                <Cpu className="h-4 w-4 mr-2" />
-                Technical VPS
-              </Button>
-              <Button 
-                variant={productCategory === 'business' ? 'default' : 'outline'}
-                onClick={() => setProductCategory('business')}
-                className="px-6 bg-green-600 hover:bg-green-700 text-white"
-              >
-                <Building className="h-4 w-4 mr-2" />
-                MSME-VPS
-              </Button>
-            </div>
-
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
-                <Zap className="h-5 w-5 mr-2" />
-                Start FREE - No Credit Card Required
+              <Button size="lg" className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                <Cloud className="h-5 w-5 mr-2" />
+                Get Custom Quote
               </Button>
               <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700">
-                <IndianRupee className="h-5 w-5 mr-2" />
-                View Paid Plans from ₹499/month
+                <Shield className="h-5 w-5 mr-2" />
+                View Compliance Details
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-green-600 text-green-600 hover:bg-green-50"
-                onClick={() => setShowTemplates(true)}
-              >
-                <Zap className="h-5 w-5 mr-2" />
-                Browse Templates
-              </Button>
-              <Button size="lg" variant="outline" className="border-green-600 text-green-600 hover:bg-green-50">
-                <MessageCircle className="h-5 w-5 mr-2" />
-                WhatsApp Support
+              <Button size="lg" variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">
+                <Monitor className="h-5 w-5 mr-2" />
+                Live Demo
               </Button>
             </div>
           </div>
 
-          {/* Featured Products Preview */}
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Technical VPS Preview */}
-            <Card className="p-6 shadow-xl border-indigo-200">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg font-bold text-indigo-600">Technical VPS Hosting</CardTitle>
-                  <Badge className="bg-indigo-100 text-indigo-800">For Developers</Badge>
-                </div>
-                <CardDescription>Full control with root access and APIs</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="text-center py-2">
-                  <div className="text-2xl font-bold text-indigo-600">From ₹499</div>
-                  <div className="text-gray-600">per month</div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Check className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Full Root Access</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Check className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">API Access</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Check className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">99.9% Uptime SLA</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* MSME-VPS Preview */}
-            <Card className="p-6 shadow-xl border-green-200">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg font-bold text-green-600">MSME-VPS Business</CardTitle>
-                  <Badge className="bg-green-100 text-green-800">For MSMEs</Badge>
-                </div>
-                <CardDescription>Managed servers for Indian businesses</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="text-center py-2">
-                  <div className="text-2xl font-bold text-green-600">₹999</div>
-                  <div className="text-gray-600">per month</div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Check className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">No Technical Skills Required</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Check className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Indian WhatsApp Support</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Check className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">GST-Compliant Billing</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Trust Indicators */}
-      <section className="py-12 bg-white border-y">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {trustIndicators.map((indicator, index) => (
-              <div key={index} className="flex items-center justify-center space-x-3">
-                <indicator.icon className="h-8 w-8 text-green-600" />
-                <span className="font-semibold text-gray-900">{indicator.text}</span>
+          {/* Key Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-3xl font-bold text-purple-600">{stat.value}</div>
+                <div className="text-sm text-gray-600">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Templates Section */}
-      <section className="py-16 bg-white">
+      {/* Target Market Selector */}
+      <section className="py-12 bg-white border-y">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Choose Your Market</h2>
+            <p className="text-gray-600">Specialized solutions for different organizational needs</p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {targetMarkets.map((market) => (
+              <Card 
+                key={market.id}
+                className={`cursor-pointer transition-all ${targetMarket === market.id ? 'ring-2 ring-purple-500' : ''}`}
+                onClick={() => setTargetMarket(market.id)}
+              >
+                <CardContent className="p-6 text-center">
+                  <market.icon className="h-12 w-12 text-purple-600 mx-auto mb-4" />
+                  <h3 className="font-semibold text-gray-900">{market.name}</h3>
+                  <p className="text-sm text-gray-600 mt-2">{market.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Solutions Section */}
+      <section className="py-16" id="solutions">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Enterprise Solutions</h2>
+            <p className="text-gray-600">Tailored private cloud solutions for your organization</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {solutions.map((solution) => (
+              <Card key={solution.id} className={`p-6 shadow-xl ${solution.color} ${solution.popular ? 'ring-2 ring-purple-500' : ''}`}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <solution.icon className="h-8 w-8 text-purple-600" />
+                      <CardTitle className="text-xl font-bold">{solution.name}</CardTitle>
+                    </div>
+                    <Badge className="bg-purple-100 text-purple-800">{solution.badge}</Badge>
+                  </div>
+                  <CardDescription className="text-lg">{solution.description}</CardDescription>
+                  {solution.tagline && (
+                    <p className="text-sm text-purple-600 font-medium mt-2">{solution.tagline}</p>
+                  )}
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="text-center py-4">
+                    <div className="text-2xl font-bold text-purple-600">{solution.price}</div>
+                    <div className="text-gray-600">Custom pricing based on requirements</div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    {solution.features.slice(0, 6).map((feature, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <Check className="h-4 w-4 text-green-500" />
+                        <span className="text-sm">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {solution.highlights && (
+                    <div className="border-t pt-4">
+                      <div className="text-sm font-medium text-gray-900 mb-2">Key Highlights:</div>
+                      {solution.highlights.map((highlight, index) => (
+                        <div key={index} className="text-xs text-purple-600">• {highlight}</div>
+                      ))}
+                    </div>
+                  )}
+
+                  <Button className="w-full bg-purple-600 hover:bg-purple-700">
+                    Get Custom Quote
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Enterprise Features */}
+      <section className="py-16 bg-white" id="features">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Enterprise Features</h2>
+            <p className="text-gray-600">Comprehensive capabilities for modern organizations</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {enterpriseFeatures.map((feature, index) => (
+              <Card key={index} className="p-6">
+                <feature.icon className="h-12 w-12 text-purple-600 mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                <p className="text-gray-600">{feature.description}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Compliance Section */}
+      <section className="py-16 bg-gray-50" id="compliance">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Compliance & Security</h2>
+            <p className="text-gray-600">Built to meet the highest regulatory standards</p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {complianceBadges.map((badge, index) => (
+              <Card key={index} className="p-6 text-center">
+                <div className="text-2xl font-bold text-purple-600 mb-2">{badge.name}</div>
+                <p className="text-sm text-gray-600">{badge.description}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 bg-purple-600">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-white mb-4">Ready for Your Private Cloud?</h2>
+          <p className="text-xl text-purple-100 mb-8">
+            Get a custom quote tailored to your organization's needs
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
+              <Cloud className="h-5 w-5 mr-2" />
+              Get Custom Quote
+            </Button>
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-purple-700">
+              <Phone className="h-5 w-5 mr-2" />
+              Schedule Consultation
+            </Button>
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+} mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Business-Ready <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Server Templates</span>
             </h2>
